@@ -1,0 +1,83 @@
+@charset "UTF-8";
+
+@import "./_def";
+@import "./common/object";
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
+
+body {
+    @include fixedSize(100%);
+    background-color: $global-background-color-light;
+    color: $global-text-color-light;
+    cursor: default;
+    font-family: "Pretendard Variable", "Pretendard", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 300;
+    line-height: 1;
+    margin: 0;
+
+    &.-theme-dark {
+        background-color: $global-background-color-dark;
+        color: $global-text-color-dark;
+    }
+}
+
+html {
+    @include fixedSize(100%);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+a:link,
+a:visited {
+    color: inherit;
+    text-decoration: none;
+
+    .ck & {
+        all: revert;
+    }
+}
+
+button, input, select, textarea {
+    background-color: transparent;
+    block-size: initial;
+    border: none;
+    border-radius: 0;
+    color: inherit;
+    font: inherit;
+    inline-size: initial;
+    outline: none;
+    padding: initial;
+    padding-block: initial;
+    padding-inline: initial;
+    -webkit-border-radius: 0;
+
+    .ck & {
+        all: revert;
+    }
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font: inherit;
+    margin-block: initial;
+    margin-inline: initial;
+
+    .ck & {
+        all: revert;
+    }
+}
+
+img {
+    -webkit-user-drag: none;
+}
+
+menu, ol, ul {
+    list-style-type: none;
+    margin-block: initial;
+    padding-inline: initial;
+
+    .ck & {
+        all: revert;
+    }
+}

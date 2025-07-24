@@ -1,0 +1,32 @@
+@charset "UTF-8";
+
+@use "sass:color";
+@import "./../../_def";
+@import "./_def";
+
+[data-hy-object="cover"] {
+    @include fixedSize(100%);
+    top: 0;
+    left: 0;
+    background-color: #424242a0;
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
+    transition-duration: 175ms;
+    transition-property: opacity;
+    transition-timing-function: ease;
+    z-index: 6;
+
+    &.-visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+body.-theme-dark [data-hy-object="cover"] {
+    background-color: #212121a0;
+}
+
+body:has([data-hy-object="cover"].-visible) {
+    overflow: hidden;
+}
