@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hml.planat.mappers.ArticleMapper">
+    <insert id="insertArticle"
+    useGeneratedKeys="true"
+    keyColumn="id"
+    keyProperty="id">
+        INSERT INTO `planat`.`articles` (`schedule_id`, `user_email`, `content`, `created_at`, `modified_at`)
+        VALUES (#{article.scheduleId}, #{article.userEmail}, #{article.content}, #{article.createdAt}, #{article.modifiedAt})
+        LIMIT 1
+    </insert>
+    <update id="updateArticle">
+        UPDATE `planat`.`articles`
+        SET `schedule_id` = #{scheduleId},
+            `user_email`  = #{userEmail},
+            `content`     = #{content},
+            `created_at`  = #{createdAt},
+            `modified_at` = #{modifiedAt}
+        LIMIT 1
+    </update>
+    <delete id="deleteArticleById">
+        DELETE
+        FROM `planat`.`articles`
+        WHERE `id` = #{id}
+        LIMIT 1
+    </delete>
+    <select id="selectAll">
+        SELECT `T0`.`id`          AS `id`,
+               `T0`.`schedule_id` AS `scheduleId`,
+               `T0`.`user_email`  AS `userEmail`,
+               `T0`.`content`     AS `content`,
+               `T0`.`created_at`  AS `createdAt`,
+               `T0`.`modified_at` AS `modifiedAt`,
+               `T1`.`nickname`    AS `userNickname`
+        FROM `planat`.`articles` AS `T0`
+                 LEFT JOIN `planat`.`users` AS `T1` ON `T0`.`user_email` = `T1`.`email`
+        WHERE `schedule_id` = #{scheduleId}
+    </select>
+    <select id="selectArticleById" resultType="com.hml.planat.entities.articles.ArticleEntity">
+        SELECT `id`       AS `id`,
+               `schedule_id` AS `scheduleId`,
+               `user_email`  AS `userEmail`,
+               `content`     AS `content`,
+               `created_at`  AS `createdAt`,
+               `modified_at` AS `modifiedAt`
+        FROM `planat`.`articles`
+        WHERE `id` = #{id}
+        LIMIT 1
+    </select>
+    <select id="selectArticleByIdAndUserEmail" resultType="com.hml.planat.entities.articles.ArticleEntity">
+        SELECT `id`          AS `id`,
+               `schedule_id` AS `scheduleId`,
+               `user_email`  AS `userEmail`,
+               `content`     AS `content`,
+               `created_at`  AS `createdAt`,
+               `modified_at` AS `modifiedAt`
+        FROM `planat`.`articles`
+        WHERE `id` = #{id}
+          AND `user_email` = #{userEmail}
+        LIMIT 1
+    </select>
+</mapper>

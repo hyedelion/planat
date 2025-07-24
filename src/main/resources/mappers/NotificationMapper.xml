@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hml.planat.mappers.NotificationMapper">
+    <insert id="insert"
+            useGeneratedKeys="true"
+            keyProperty="id"
+            keyColumn="id">
+        INSERT INTO `planat`.`notifications` (`target_user_email`, `referrer_user_email`, `message`, `created_at`,
+                                              `is_read`)
+        VALUES (#{notification.targetUserEmail}, #{notification.referrerUserEmail}, #{notification.message},
+                #{notification.createdAt}, #{notification.isRead})
+    </insert>
+    <update id="update">
+        UPDATE `planat`.`notifications`
+        SET `target_user_email`   = #{notification.targetUserEmail},
+            `referrer_user_email` = #{notification.referrerUserEmail},
+            `message`             = #{notification.message},
+            `created_at`          = #{notification.createdAt},
+            `is_read`             = #{notification.isRead}
+        WHERE `id` = #{notification.id}
+        LIMIT 1
+    </update>
+    <delete id="deleteById">
+        DELETE
+        FROM `planat`.`notifications`
+        WHERE `id` = #{id}
+        LIMIT 1
+    </delete>
+    <select id="selectAllByTargetUserEmail">
+        SELECT `id`                  AS `id`,
+               `target_user_email`   AS `targetUserEmail`,
+               `referrer_user_email` AS `referrerUserEmail`,
+               `message`             AS `message`,
+               `created_at`          AS `createdAt`,
+               `is_read`             AS `isRead`
+        FROM `planat`.`notifications`
+        WHERE `target_user_email` = #{targetUserEmail}
+    </select>
+    <select id="selectById" resultType="com.hml.planat.entities.NotificationEntity">
+        SELECT `id`                  AS `id`,
+               `target_user_email`   AS `targetUserEmail`,
+               `referrer_user_email` AS `referrerUserEmail`,
+               `message`             AS `message`,
+               `created_at`          AS `createdAt`,
+               `is_read`             AS `isRead`
+        FROM `planat`.`notifications`
+        WHERE `id` = #{id}
+        LIMIT 1
+    </select>
+</mapper>

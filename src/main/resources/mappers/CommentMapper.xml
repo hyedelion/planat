@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hml.planat.mappers.CommentMapper">
+    <insert id="insertComment"
+    useGeneratedKeys="true"
+    keyColumn="id"
+    keyProperty="id">
+        INSERT INTO `planat`.`comments` (`article_id`, `comment_id`, `user_email`, `content`, `created_at`, `update_at`)
+        VALUES (#{comment.articleId}, #{comment.commentId}, #{comment.userEmail}, #{comment.content}, #{comment.createdAt}, #{comment.updatedAt})
+        LIMIT1
+    </insert>
+    <update id="updateComment">
+        UPDATE `planat`.`comments`
+        SET `id`         = #{id},
+            `article_id` = #{articleId},
+            `comment_id` = #{commentId},
+            `user_email` = #{userEmail},
+            `content`    = #{content},
+            `created_at` = #{createdAt},
+            `update_at`  = #{updateAt}
+        LIMIT 1
+
+    </update>
+    <delete id="deleteCommentById">
+        DELETE
+        FROM `planat`.`comments`
+        WHERE `id` = #{id}
+        LIMIT 1
+    </delete>
+    <select id="selectAll">
+        SELECT `T0`.`id`         AS `id`,
+               `T0`.`article_id` AS `articleId`,
+               `T0`.`comment_id` AS `commentId`,
+               `T0`.`user_email` AS `userEmail`,
+               `T0`.`content`    AS `content`,
+               `T0`.`created_at` AS `createdAt`,
+               `T0`.`update_at`  AS `updateAt`,
+               `T1`.`nickname`   AS `userNickname`
+        FROM `planat`.`comments` AS `T0`
+                 LEFT JOIN `planat`.`users` AS `T1` ON `T1`.`email` = `T0`.`user_email`
+        WHERE `T0`.`article_id` = #{articleId}
+    </select>
+    <select id="selectCommentById" resultType="com.hml.planat.entities.comments.CommentEntity">
+        SELECT `id`         AS `id`,
+               `article_id` AS `articleId`,
+               `comment_id` AS `commentId`,
+               `user_email` AS `userEmail`,
+               `content`    AS `content`,
+               `created_at` AS `createdAt`,
+               `update_at`  AS `updateAt`
+        FROM `planat`.`comments`
+        WHERE `id` = #{id}
+        LIMIT 1
+    </select>
+</mapper>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hml.planat.mappers.AttachmentMapper">
+    <insert id="insert"
+    useGeneratedKeys="true"
+    keyColumn="id"
+    keyProperty="id">
+        INSERT INTO `planat`.`attachments` (`schedule_id`, `article_id`, `user_email`, `name`, `content_type`, `data`, `size`, `created_at`)
+        VALUES (#{attachment.scheduleId}, #{attachment.articleId}, #{attachment.userEmail}, #{attachment.name}, #{attachment.contentType}, #{attachment.data}, #{attachment.size}, #{attachment.createdAt})
+    </insert>
+    <delete id="deleteById">
+        DELETE
+        FROM `planat`.`attachments`
+        WHERE `id` = #{id}
+        LIMIT 1
+    </delete>
+    <select id="selectById" resultType="com.hml.planat.entities.attachments.AttachmentEntity">
+        SELECT `id`           AS `id`,
+               `schedule_id`  AS `scheduleId`,
+               `article_id`   AS `articleId`,
+               `user_email`   AS `userEmail`,
+               `name`         AS `name`,
+               `content_type` AS `contentType`,
+               `data`         AS `data`,
+               `size`         AS `size`,
+               `created_at`   AS `createdAt`
+        FROM `planat`.`attachments`
+        WHERE `id` = #{id}
+        LIMIT 1
+    </select>
+    <select id="selectAllByScheduleId">
+        SELECT `id`           AS `id`,
+               `schedule_id`  AS `scheduleId`,
+               `article_id`   AS `articleId`,
+               `user_email`   AS `userEmail`,
+               `name`         AS `name`,
+               `content_type` AS `contentType`,
+               `size`         AS `size`,
+               `created_at`   AS `createdAt`
+        FROM `planat`.`attachments`
+        WHERE `schedule_id` = #{scheduleId}
+    </select>
+
+    <select id="selectAllByArticleId">
+        SELECT `id`           AS `id`,
+               `schedule_id`  AS `scheduleId`,
+               `article_id`   AS `articleId`,
+               `user_email`   AS `userEmail`,
+               `name`         AS `name`,
+               `content_type` AS `contentType`,
+               `size`         AS `size`,
+               `created_at`   AS `createdAt`
+        FROM `planat`.`attachments`
+        WHERE `article_id` = #{articleId}
+    </select>
+</mapper>

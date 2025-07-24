@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hml.planat.mappers.LoginAttemptMapper">
+    <insert id="insert">
+        INSERT INTO `planat`.`login_attempts`(`email`, `ip`, `ua`, `result`, `created_at`)
+        VALUES (#{loginAttempt.email}, #{loginAttempt.ip}, #{loginAttempt.ua}, #{loginAttempt.result},
+                #{loginAttempt.createdAt})
+    </insert>
+</mapper>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hml.planat.mappers.FriendMapper">
+    <insert id="insert">
+        INSERT INTO `planat`.`friends` (`requester_user_email`, `requestee_user_email`, `is_accepted`, `created_at`)
+        VALUES (#{friend.requesterUserEmail}, #{friend.requesteeUserEmail}, #{friend.isAccepted}, #{friend.createdAt})
+    </insert>
+    <update id="update">
+        UPDATE `planat`.`friends`
+        SET `is_accepted` = #{friend.isAccepted},
+            `created_at`  = #{friend.createdAt}
+        WHERE `requester_user_email` = #{friend.requesterUserEmail}
+          AND `requestee_user_email` = #{friend.requesteeUserEmail}
+        LIMIT 1
+    </update>
+    <delete id="delete">
+        DELETE
+        FROM `planat`.`friends`
+        WHERE `requester_user_email` = #{requesterUserEmail}
+          AND `requestee_user_email` = #{requesteeUserEmail}
+        LIMIT 1
+    </delete>
+    <delete id="deleteRelationshipByFriendEmail">
+        DELETE
+        FROM `planat`.`friends`
+        WHERE `requester_user_email` = #{friendEmail}
+           OR `requestee_user_email` = #{friendEmail}
+        LIMIT 1
+    </delete>
+    <select id="selectByRequesterAndUserEmail" resultType="com.hml.planat.entities.users.FriendEntity">
+        SELECT `requester_user_email` AS `requesterUserEmail`,
+               `requestee_user_email` AS `requesteeUserEmail`,
+               `is_accepted`          AS `isAccepted`,
+               `created_at`           AS `createdAt`
+        FROM `planat`.`friends`
+        WHERE (`requester_user_email` = #{requesterUserEmail}
+            AND `requestee_user_email` = #{requesteeUserEmail})
+           OR (`requester_user_email` = #{requesteeUserEmail}
+            AND `requestee_user_email` = #{requesterUserEmail})
+    </select>
+    <select id="selectFriendRequestByRequesterEmail">
+        SELECT `T0`.`requestee_user_email` AS `requesteeUserEmail`,
+               `T0`.`requester_user_email` AS `requesterUserEmail`,
+               `T0`.`is_accepted`          AS `isAccepted`,
+               `T0`.`created_at`           AS `createdAt`,
+               `T1`.`nickname`             AS `requesterUserNickname`,
+               `T2`.`nickname`             AS `requesteeUserNickname`
+        FROM `planat`.`friends` AS `T0`
+                 LEFT JOIN `planat`.`users` AS `T1` ON `T0`.`requester_user_email` = `T1`.`email`
+                 LEFT JOIN `planat`.`users` AS `T2` ON `T0`.`requestee_user_email` = `T2`.`email`
+        WHERE `requester_user_email` = #{requesterUserEmail}
+          AND `is_accepted` = FALSE
+    </select>
+    <select id="selectFriendRequestByRequesteeEmail">
+        SELECT `T0`.`requestee_user_email` AS `requesteeUserEmail`,
+               `T0`.`requester_user_email` AS `requesterUserEmail`,
+               `T0`.`is_accepted`          AS `isAccepted`,
+               `T0`.`created_at`           AS `createdAt`,
+               `T1`.`nickname`             AS `requesterUserNickname`,
+               `T2`.`nickname`             AS `requesteeUserNickname`
+        FROM `planat`.`friends` AS `T0`
+                 LEFT JOIN `planat`.`users` AS `T1` ON `T0`.`requester_user_email` = `T1`.`email`
+                 LEFT JOIN `planat`.`users` AS `T2` ON `T0`.`requestee_user_email` = `T2`.`email`
+        WHERE `requestee_user_email` = #{requesteeUserEmail}
+          AND `is_accepted` = FALSE
+    </select>
+    <select id="selectAllFriendsByUserEmail">
+        SELECT `T0`.`requestee_user_email`                                            AS `requesteeUserEmail`,
+               `T0`.`requester_user_email`                                            AS `requesterUserEmail`,
+               `T0`.`is_accepted`                                                     AS `isAccepted`,
+               `T0`.`created_at`                                                      AS `createdAt`,
+               `T1`.`nickname`                                                        AS `requesterUserNickname`,
+               `T2`.`nickname`                                                        AS `requesteeUserNickname`,
+               IFNULL(DATE_ADD(`T3`.`updated_at`, INTERVAL 5 MINUTE) >= NOW(), FALSE) AS `isOnline`
+        FROM `planat`.`friends` AS `T0`
+                 LEFT JOIN `planat`.`users` AS `T1` ON `T0`.`requester_user_email` = `T1`.`email`
+                 LEFT JOIN `planat`.`users` AS `T2` ON `T0`.`requestee_user_email` = `T2`.`email`
+                 LEFT JOIN `planat`.`user_tracks` AS `T3` ON `T3`.`user_email` =
+                                                             IF(`T0`.`requester_user_email` = #{userEmail},
+                                                                `T0`.`requestee_user_email`,
+                                                                `T0`.`requester_user_email`)
+        WHERE (`T0`.`requester_user_email` = #{userEmail} OR `T0`.`requestee_user_email` = #{userEmail})
+          AND `T0`.`is_accepted` = TRUE
+    </select>
+    <select id="selectByFriendEmail" resultType="com.hml.planat.vos.FriendVo">
+        SELECT `T0`.`requestee_user_email` AS `requesteeUserEmail`,
+               `T0`.`requester_user_email` AS `requesterUserEmail`,
+               `T0`.`is_accepted`          AS `isAccepted`,
+               `T0`.`created_at`           AS `createdAt`,
+               `T1`.`nickname`             AS `requesterUserNickname`,
+               `T2`.`nickname`             AS `requesteeUserNickname`
+        FROM `planat`.`friends` AS `T0`
+                 LEFT JOIN `planat`.`users` AS `T1` ON `T0`.`requester_user_email` = `T1`.`email`
+                 LEFT JOIN `planat`.`users` AS `T2` ON `T0`.`requestee_user_email` = `T2`.`email`
+        WHERE (`requester_user_email` = #{friendEmail}
+            OR `requestee_user_email` = #{friendEmail})
+        AND `is_accepted` = TRUE
+    </select>
+</mapper>
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hml.planat.mappers.ContactTokenMapper">
+    <insert id="insert">
+        INSERT INTO `planat`.`contact_tokens` (`contact_first`, `contact_second`, `contact_third`, `code`, `salt`,
+                                                  `user_agent`, `expires_at`)
+        VALUES (#{contactToken.contactFirst}, #{contactToken.contactSecond}, #{contactToken.contactThird},
+                #{contactToken.code}, #{contactToken.salt}, #{contactToken.userAgent}, #{contactToken.expiresAt})
+    </insert>
+    <update id="update">
+        UPDATE `planat`.`contact_tokens`
+        SET `user_agent` = #{contactToken.userAgent},
+            `is_used`    = #{contactToken.isUsed},
+            `created_at` = #{contactToken.createdAt},
+            `expires_at` = #{contactToken.expiresAt}
+        WHERE `contact_first` = #{contactToken.contactFirst}
+          AND `contact_second` = #{contactToken.contactSecond}
+          AND `contact_third` = #{contactToken.contactThird}
+          AND `code` = #{contactToken.code}
+          AND `salt` = #{contactToken.salt}
+        LIMIT 1
+    </update>
+    <select id="selectContactAndCodeSalt" resultType="com.hml.planat.entities.users.ContactTokenEntity">
+        SELECT `contact_first`  AS `contactFirst`,
+               `contact_second` AS `contactSecond`,
+               `contact_third`  AS `contactThird`,
+               `code`           AS `code`,
+               `salt`           AS `salt`,
+               `user_agent`     AS `userAgent`,
+               `is_used`        AS `isUsed`,
+               `created_at`     AS `createdAt`,
+               `expires_at`     AS `expiresAt`
+        FROM `planat`.`contact_tokens`
+        WHERE `contact_first` = #{contactFirst}
+          AND `contact_second` = #{contactSecond}
+          AND `contact_third` = #{contactThird}
+          AND `code` = #{code}
+          AND `salt` = #{salt}
+        LIMIT 1
+    </select>
+
+
+</mapper>

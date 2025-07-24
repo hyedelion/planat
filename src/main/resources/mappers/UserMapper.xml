@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hml.planat.mappers.UserMapper">
+    <insert id="insert">
+        INSERT INTO `planat`.`users` (`email`, `password`, `nickname`, `name`, `birth`, `gender`, `contact_mvno_code`, `contact_first`, `contact_second`, `contact_third`, `address_postal`, `address_primary`, `address_secondary`, `term_service_at`, `term_privacy_at`, `term_marketing_at`, `is_admin`, `is_deleted`, `is_suspended`, `created_at`, `updated_at`)
+        VALUES (#{user.email}, #{user.password}, #{user.nickname}, #{user.name}, #{user.birth}, #{user.gender}, #{user.contactMvnoCode}, #{user.contactFirst}, #{user.contactSecond}, #{user.contactThird}, #{user.addressPostal}, #{user.addressPrimary}, #{user.addressSecondary}, #{user.termServiceAt}, #{user.termPrivacyAt}, #{user.termMarketingAt}, #{user.isAdmin}, #{user.isDeleted}, #{user.isSuspended}, #{user.createdAt}, #{user.updatedAt})
+    </insert>
+    <update id="update">
+        UPDATE `planat`.`users`
+        SET `email`             = #{user.email},
+            `password`          = #{user.password},
+            `nickname`          = #{user.nickname},
+            `name`              = #{user.name},
+            `birth`             = #{user.birth},
+            `gender`            = #{user.gender},
+            `contact_mvno_code` = #{user.contactMvnoCode},
+            `contact_first`     = #{user.contactFirst},
+            `contact_second`    = #{user.contactSecond},
+            `contact_third`     = #{user.contactThird},
+            `address_postal`    = #{user.addressPrimary},
+            `address_primary`   = #{user.addressPrimary},
+            `address_secondary` = #{user.addressSecondary},
+            `term_service_at`   = #{user.termServiceAt},
+            `term_privacy_at`   = #{user.termPrivacyAt},
+            `term_marketing_at` = #{user.termMarketingAt},
+            `is_admin`          = #{user.isAdmin},
+            `is_deleted`        = #{user.isDeleted},
+            `is_suspended`      = #{user.isSuspended},
+            `created_at`        = #{user.createdAt},
+            `updated_at`        = #{user.updatedAt}
+        WHERE `email` = #{user.email}
+        LIMIT 1
+
+    </update>
+    <select id="selectByEmail" resultType="com.hml.planat.entities.users.UserEntity">
+        SELECT `email`             AS `email`,
+               `password`          AS `password`,
+               `nickname`          AS `nickname`,
+               `name`              AS `name`,
+               `birth`             AS `birth`,
+               `gender`            AS `gender`,
+               `contact_mvno_code` AS `contactMvnoCode`,
+               `contact_first`     AS `contactFirst`,
+               `contact_second`    AS `contactSecond`,
+               `contact_third`     AS `contactThird`,
+               `address_postal`    AS `addressPostal`,
+               `address_primary`   AS `addressPrimary`,
+               `address_secondary` AS `addressSecondary`,
+               `term_service_at`   AS `termServiceAt`,
+               `term_privacy_at`   AS `termPrivacyAt`,
+               `term_marketing_at` AS `termMarketingAt`,
+               `is_admin`          AS `isAdmin`,
+               `is_deleted`        AS `isDeleted`,
+               `is_suspended`      AS `isSuspended`,
+               `created_at`        AS `createdAt`,
+               `updated_at`        AS `updatedAt`
+        FROM `planat`.`users`
+        WHERE `email` = #{email}
+    </select>
+    <select id="selectCountByEmail" resultType="java.lang.Integer">
+        SELECT COUNT(0)
+        FROM `planat`.`users`
+        WHERE `email` = #{email}
+    </select>
+    <select id="selectCountByNickname" resultType="java.lang.Integer">
+        SELECT COUNT(0)
+        FROM `planat`.`users`
+        WHERE `nickname` = #{nickname}
+    </select>
+    <select id="selectCountByContact" resultType="java.lang.Integer">
+        SELECT COUNT(0)
+        FROM `planat`.`users`
+        WHERE `contact_first` = #{contactFirst}
+          AND `contact_second` = #{contactSecond}
+          AND `contact_third` = #{contactThird}
+    </select>
+    <select id="selectAllByContact" resultType="com.hml.planat.entities.users.UserEntity">
+        SELECT `email`             AS `email`,
+               `password`          AS `password`,
+               `nickname`          AS `nickname`,
+               `name`              AS `name`,
+               `birth`             AS `birth`,
+               `gender`            AS `gender`,
+               `contact_mvno_code` AS `contactMvnoCode`,
+               `contact_first`     AS `contactFirst`,
+               `contact_second`    AS `contactSecond`,
+               `contact_third`     AS `contactThird`,
+               `address_postal`    AS `addressPostal`,
+               `address_primary`   AS `addressPrimary`,
+               `address_secondary` AS `addressSecondary`,
+               `term_service_at`   AS `termServiceAt`,
+               `term_privacy_at`   AS `termPrivacyAt`,
+               `term_marketing_at` AS `termMarketingAt`,
+               `is_admin`          AS `isAdmin`,
+               `is_deleted`        AS `isDeleted`,
+               `is_suspended`      AS `isSuspended`,
+               `created_at`        AS `createdAt`,
+               `updated_at`        AS `updatedAt`
+        FROM `planat`.`users`
+        WHERE `contact_first` = #{contactFirst}
+          AND `contact_second` = #{contactSecond}
+          AND `contact_third` = #{contactThird}
+    </select>
+    <select id="selectByNickname" resultType="com.hml.planat.entities.users.UserEntity">
+        SELECT `email`             AS `email`,
+               `password`          AS `password`,
+               `nickname`          AS `nickname`,
+               `name`              AS `name`,
+               `birth`             AS `birth`,
+               `gender`            AS `gender`,
+               `contact_mvno_code` AS `contactMvnoCode`,
+               `contact_first`     AS `contactFirst`,
+               `contact_second`    AS `contactSecond`,
+               `contact_third`     AS `contactThird`,
+               `address_postal`    AS `addressPostal`,
+               `address_primary`   AS `addressPrimary`,
+               `address_secondary` AS `addressSecondary`,
+               `term_service_at`   AS `termServiceAt`,
+               `term_privacy_at`   AS `termPrivacyAt`,
+               `term_marketing_at` AS `termMarketingAt`,
+               `is_admin`          AS `isAdmin`,
+               `is_deleted`        AS `isDeleted`,
+               `is_suspended`      AS `isSuspended`,
+               `created_at`        AS `createdAt`,
+               `updated_at`        AS `updatedAt`
+        FROM `planat`.`users`
+        WHERE `nickname` = #{nickname}
+        LIMIT 1
+    </select>
+</mapper>

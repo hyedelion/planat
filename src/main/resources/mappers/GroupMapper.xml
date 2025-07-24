@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hml.planat.mappers.GroupMapper">
+    <insert id="insert"
+    useGeneratedKeys="true"
+    keyColumn="id"
+    keyProperty="id">
+        INSERT INTO `planat`.`groups`(`user_email`, `name`, `background_color`, `color`, `created_at`, `updated_at`)
+        VALUES (#{group.userEmail}, #{group.name}, #{group.backgroundColor}, #{group.color}, #{group.createdAt}, #{group.updatedAt})
+    </insert>
+    <update id="update">
+        UPDATE `planat`.`groups`
+        SET `user_email`       = #{group.userEmail},
+            `name`             = #{group.name},
+            `background_color` = #{group.backgroundColor},
+            `color`            = #{group.color},
+            `created_at`       = #{group.createdAt},
+            `updated_at`       = #{group.updatedAt}
+        WHERE `id` = #{group.id}
+        LIMIT 1
+    </update>
+    <delete id="delete">
+        DELETE FROM `planat`.`groups`
+        WHERE `id` = #{group.id}
+        LIMIT 1
+    </delete>
+    <select id="selectAllByUserEmail">
+        SELECT `id`               AS `id`,
+               `user_email`       AS `userEmail`,
+               `name`             AS `name`,
+               `background_color` AS `backgroundColor`,
+               `color`            AS `color`,
+               `created_at`       AS `createdAt`,
+               `updated_at`       AS `updatedAt`
+        FROM `planat`.`groups`
+        WHERE `user_email`= #{user_email}
+    </select>
+    <select id="selectById" resultType="com.hml.planat.entities.groups.GroupEntity">
+        SELECT `id`               AS `id`,
+               `user_email`       AS `userEmail`,
+               `name`             AS `name`,
+               `background_color` AS `backgroundColor`,
+               `color`            AS `color`,
+               `created_at`       AS `createdAt`,
+               `updated_at`       AS `updatedAt`
+        FROM `planat`.`groups`
+        WHERE `id` = #{id}
+        LIMIT 1
+    </select>
+</mapper>

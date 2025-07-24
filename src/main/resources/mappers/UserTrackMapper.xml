@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hml.planat.mappers.UserTrackMapper">
+    <insert id="insert">
+        INSERT INTO `planat`.`user_tracks` (`user_email`, `request_uri`, `request_param`, `client_ip`, `client_ua`,
+                                            `updated_at`)
+        VALUES (#{userTrack.userEmail}, #{userTrack.requestUri}, #{userTrack.requestParam}, #{userTrack.clientIp},
+                #{userTrack.clientUa}, #{userTrack.updatedAt})
+        ON DUPLICATE KEY UPDATE `request_uri`   = VALUE(`request_uri`),
+                                `request_param` = VALUE(`request_param`),
+                                `client_ip`     = VALUE(`client_ip`),
+                                `client_ua`     = VALUE(`client_ua`),
+                                `updated_at`    = VALUE(`updated_at`);
+    </insert>
+
+    <select id="selectByUserEmail" resultType="com.hml.planat.entities.users.UserTrackEntity">
+        SELECT `user_email`    AS `userEmail`,
+               `request_uri`   AS `requestUri`,
+               `request_param` AS `requestParam`,
+               `client_ip`     AS `clientIp`,
+               `client_ua`     AS `clientUa`,
+               `updated_at`    AS `updatedAt`
+        FROM `planat`.`user_tracks`
+        WHERE `user_email` = #{userEmail}
+        LIMIT 1
+    </select>
+</mapper>

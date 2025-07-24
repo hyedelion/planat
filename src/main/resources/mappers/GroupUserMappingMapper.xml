@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.hml.planat.mappers.GroupUserMappingMapper">
+    <insert id="insert">
+        INSERT INTO `planat`.`group_user_mappings` (`group_id`, `user_email`, `is_accepted`, `created_at`)
+        VALUES (#{groupUserMapping.groupId}, #{groupUserMapping.userEmail}, #{groupUserMapping.isAccepted}, #{groupUserMapping.createdAt})
+    </insert>
+    <update id="updateByGroupIdAndUserEmail">
+        UPDATE `planat`.`group_user_mappings`
+        SET `is_accepted` = #{groupUserMapping.isAccepted},
+            `created_at`  = #{groupUserMapping.createdAt}
+        WHERE `group_id` = #{groupUserMapping.groupId}
+          AND `user_email` = #{groupUserMapping.userEmail}
+        LIMIT 1
+    </update>
+    <delete id="deleteByGroupIdAndUserEmail">
+        DELETE
+        FROM `planat`.`group_user_mappings`
+        WHERE `group_id` = #{groupId}
+          AND `user_email` = #{userEmail}
+        LIMIT 1
+
+    </delete>
+    <select id="selectGrantedUsersByGroupId">
+        SELECT `T2`.`id`       AS `groupId`,
+               `T2`.`name`     AS `groupName`,
+               `T1`.`email`    AS `userEmail`,
+               `T1`.`nickname` AS `userNickname`
+        FROM `planat`.`group_user_mappings` AS `T0`
+                 LEFT JOIN `planat`.`users` AS `T1` ON `T0`.`user_email` = `T1`.`email`
+                 LEFT JOIN `planat`.`groups` AS `T2` ON `T0`.`group_id` = `T2`.`id`
+        WHERE `T0`.`group_id` = #{groupId}
+          AND `T0`.`is_accepted` = TRUE
+    </select>
+
+    <select id="selectPendingUsersByUserEmail">
+        SELECT `T0`.`id`       AS `groupId`,
+               `T0`.`name`     AS `groupName`,
+               `T2`.`email`    AS `userEmail`,
+               `T2`.`nickname` AS `userNickname`
+        FROM `planat`.`groups` AS `T0`
+                 INNER JOIN `planat`.`group_user_mappings` AS `T1`
+                           ON `T0`.`id` = `T1`.`group_id` AND `T1`.`is_accepted` = FALSE
+                 INNER JOIN `planat`.`users` AS `T2` ON `T1`.`user_email` = `T2`.`email`
+        WHERE `T0`.`user_email` = #{userEmail}
+    </select>
+    <select id="selectReceivedByUserEmail">
+        SELECT `T1`.`id` AS `groupId`,
+               `T1`.`name` AS `groupName`,
+               `T1`.`user_email` AS `userEmail`,
+               `T2`.`nickname` AS `userNickname`
+        FROM `planat`.`group_user_mappings` AS `T0`
+        INNER JOIN `planat`.`groups` AS `T1` ON `T0`.`group_id` = `T1`.`id`
+        INNER JOIN `planat`.`users` AS `T2` ON `T1`.`user_email` = `T2`.`email`
+        WHERE `T0`.`user_email` = #{userEmail}
+          AND `T0`.`is_accepted` = FALSE
+    </select>
+    <select id="selectByGroupIdAndUserEmail"
+            resultType="com.hml.planat.entities.groups.GroupUserMappingEntity">
+        SELECT `group_id`    AS `groupId`,
+               `user_email`  AS `userEmail`,
+               `is_accepted` AS `isAccepted`,
+               `created_at`  AS `createdAt`
+        FROM `planat`.`group_user_mappings`
+        WHERE `group_id` = #{groupId}
+          AND `user_email` = #{userEmail}
+    </select>
+    <select id="selectActiveByUserEmail">
+        SELECT `T1`.`id`                                 AS `groupId`,
+               `T1`.`name`                               AS `groupName`,
+               `T1`.`background_color`                   AS `backgroundColor`,
+               `T1`.`color`                              AS `color`,
+               `T2`.`email`                              AS `userEmail`,
+               `T2`.`nickname`                           AS `userNickname`,
+               `T1`.`user_email` = #{userEmail}          AS `isMine`,
+               (SELECT COUNT(0)
+                FROM `planat`.`group_user_mappings` AS `TI`
+                WHERE `TI`.`group_id` = `T0`.`group_id`) AS `userCount`
+        FROM `planat`.`group_user_mappings` AS `T0`
+                 LEFT JOIN `planat`.`groups` AS `T1` ON `T0`.`group_id` = `T1`.`id`
+                 LEFT JOIN `planat`.`users` AS `T2` ON `T1`.`user_email` = `T2`.`email`
+        WHERE `T0`.`user_email` = #{userEmail}
+          AND `is_accepted` = TRUE
+    </select>
+    <select id="selectByGroupId" resultType="com.hml.planat.entities.groups.GroupUserMappingEntity">
+        SELECT `T0`.`group_id`    AS `groupId`,
+               `T0`.`user_email`  AS `userEmail`,
+               `T0`.`is_accepted` AS `isAccepted`,
+               `T0`.`created_at`  AS `createdAt`
+        FROM `planat`.`group_user_mappings` AS `T0`
+        WHERE `group_id` = #{groupId}
+    </select>
+
+</mapper>
