@@ -2,6 +2,63 @@ import {HyLabel} from "../../common/object/label.js";
 import {Alignment, Autoformat, AutoImage, Autosave, BlockQuote, Bold, ClassicEditor, Essentials, FindAndReplace, FontBackgroundColor, FontColor, FontFamily, FontSize, GeneralHtmlSupport, Highlight, ImageBlock, ImageCaption, ImageInline, ImageInsert, ImageInsertViaUrl, ImageResize, ImageStyle, ImageTextAlternative, ImageToolbar, ImageUpload, Indent, IndentBlock, Italic, Link, LinkImage, List, ListProperties, MediaEmbed, Mention, Paragraph, PasteFromOffice, RemoveFormat, SimpleUploadAdapter, Strikethrough, Table, TableCaption, TableCellProperties, TableColumnResize, TableProperties, TableToolbar, TextTransformation, TodoList, Underline} from '../../../libraries/ckeditor5/ckeditor5.js';
 import translations from '../../../libraries/ckeditor5/translations/ko.js';
 
+const editorConfig = {
+    toolbar: {
+        items: ['fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|', 'bold', 'italic', 'underline', 'strikethrough', 'removeFormat', '|', 'link', 'insertImage', 'mediaEmbed', 'insertTable', 'highlight', 'blockQuote', '|', 'alignment', '|', 'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'],
+        shouldNotGroupWhenFull: true
+    },
+    plugins: [Alignment, Autoformat, AutoImage, Autosave, BlockQuote, Bold, Essentials, FindAndReplace, FontBackgroundColor, FontColor, FontFamily, FontSize, GeneralHtmlSupport, Highlight, ImageBlock, ImageCaption, ImageInline, ImageInsert, ImageInsertViaUrl, ImageResize, ImageStyle, ImageTextAlternative, ImageToolbar, ImageUpload, Indent, IndentBlock, Italic, Link, LinkImage, List, ListProperties, MediaEmbed, Mention, Paragraph, PasteFromOffice, RemoveFormat, SimpleUploadAdapter, Strikethrough, Table, TableCaption, TableCellProperties, TableColumnResize, TableProperties, TableToolbar, TextTransformation, TodoList, Underline],
+    fontFamily: {
+        supportAllValues: true
+    },
+    fontSize: {
+        options: [10, 12, 14, 'default', 18, 20, 22],
+        supportAllValues: true
+    },
+    htmlSupport: {
+        allow: [
+            {
+                name: /^.*$/,
+                styles: true,
+                attributes: true,
+                classes: true
+            }
+        ]
+    },
+    image: {
+        toolbar: ['toggleImageCaption', 'imageTextAlternative', '|', 'imageStyle:inline', 'imageStyle:wrapText', 'imageStyle:breakText', '|', 'resizeImage']
+    },
+    initialData: '',
+    language: 'ko',
+    licenseKey: 'GPL',
+    link: {
+        addTargetToExternalLinks: true,
+        defaultProtocol: 'https://',
+        decorators: {
+            toggleDownloadable: {
+                mode: 'manual',
+                label: 'Downloadable',
+                attributes: {
+                    download: 'file'
+                }
+            }
+        }
+    },
+    list: {
+        properties: {
+            styles: true,
+            startIndex: true,
+            reversed: true
+        }
+    },
+    mention: {
+        feeds: [{marker: '@', feed: []}]
+    },
+    placeholder: '내용을 입력해 주세요.',
+    table: {contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']},
+    translations: [translations]
+};
+
 class ScheduleViewHandler {
     /**
      * @param {number} size
@@ -16,7 +73,6 @@ class ScheduleViewHandler {
         }
     }
 
-    /** @type {HTMLElement} */ $side;
     /** @type {HTMLElement} */ $element;
     /** @type {HTMLElement} */ $title;
     /** @type {HTMLElement} */ $due;
@@ -36,10 +92,9 @@ class ScheduleViewHandler {
     editorInstance;
     lastSchedule;
 
-    /** @param {{$side: HTMLElement}} args */
+    /** @param {{$element: HTMLElement}} args */
     constructor(args) {
-        this.$side = args.$side;
-        this.$element = this.$side.querySelector('[data-hy-reference="body"][data-hy-name="view"]');
+        this.$element = args.$element;
         this.$title = this.$element.querySelector('[data-hy-reference="title"]');
         this.$due = this.$element.querySelector('[data-hy-reference="due"]');
         this.$location = this.$element.querySelector('[data-hy-reference="location"]');
@@ -63,62 +118,64 @@ class ScheduleViewHandler {
         this.$uploadAnchor.addEventListener('click', this.#_uploadAnchorOnClick);
         this.$articleWriteForm.addEventListener('submit', this.#_articleWriteFormOnSubmit);
 
-        ClassicEditor.create(this.$articleWriteForm['content'], {
-            toolbar: {
-                items: ['fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|', 'bold', 'italic', 'underline', 'strikethrough', 'removeFormat', '|', 'link', 'insertImage', 'mediaEmbed', 'insertTable', 'highlight', 'blockQuote', '|', 'alignment', '|', 'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'],
-                shouldNotGroupWhenFull: true
-            },
-            plugins: [Alignment, Autoformat, AutoImage, Autosave, BlockQuote, Bold, Essentials, FindAndReplace, FontBackgroundColor, FontColor, FontFamily, FontSize, GeneralHtmlSupport, Highlight, ImageBlock, ImageCaption, ImageInline, ImageInsert, ImageInsertViaUrl, ImageResize, ImageStyle, ImageTextAlternative, ImageToolbar, ImageUpload, Indent, IndentBlock, Italic, Link, LinkImage, List, ListProperties, MediaEmbed, Mention, Paragraph, PasteFromOffice, RemoveFormat, SimpleUploadAdapter, Strikethrough, Table, TableCaption, TableCellProperties, TableColumnResize, TableProperties, TableToolbar, TextTransformation, TodoList, Underline],
-            fontFamily: {
-                supportAllValues: true
-            },
-            fontSize: {
-                options: [10, 12, 14, 'default', 18, 20, 22],
-                supportAllValues: true
-            },
-            htmlSupport: {
-                allow: [
-                    {
-                        name: /^.*$/,
-                        styles: true,
-                        attributes: true,
-                        classes: true
-                    }
-                ]
-            },
-            image: {
-                toolbar: ['toggleImageCaption', 'imageTextAlternative', '|', 'imageStyle:inline', 'imageStyle:wrapText', 'imageStyle:breakText', '|', 'resizeImage']
-            },
-            initialData: '',
-            language: 'ko',
-            licenseKey: 'GPL',
-            link: {
-                addTargetToExternalLinks: true,
-                defaultProtocol: 'https://',
-                decorators: {
-                    toggleDownloadable: {
-                        mode: 'manual',
-                        label: 'Downloadable',
-                        attributes: {
-                            download: 'file'
+        ClassicEditor.create(this.$articleWriteForm['content'], editorConfig).then((editor) => this.editorInstance = editor);
+
+        sideHandler.actionCallbackMap['delete'].push(() => {
+            if (!this.$element.isVisible()) {
+                return;
+            }
+            dialog.showSimpleYesNo('경고', '정말로 보고계신 스케줄을 삭제할까요? 첨부 파일, 게시글, 댓글 등이 모두 삭제됩니다.', {
+                onClickYesCallback: () => {
+                    loading.show();
+                    const xhr = new XMLHttpRequest();
+                    const formData = new FormData();
+                    formData.append('id', this.lastSchedule.id);
+                    xhr.onreadystatechange = () => {
+                        if (xhr.readyState !== XMLHttpRequest.DONE) {
+                            return;
                         }
-                    }
+                        loading.hide();
+                        if (xhr.status < 200 || xhr.status >= 300) {
+                            dialog.showSimpleOk('오류', '요청을 처리하는 도중 오류가 발생하였습니다. 잠시 후 다시 시도해 주세요.', {onClickOkCallback: () => resolve?.(response)});
+                            return;
+                        }
+                        const response = JSON.parse(xhr.responseText);
+                        switch (response.result) {
+                            case 'failure':
+                                dialog.showSimpleOk('경고', '알 수 없는 이유로 스케줄을 삭제하지 못하였습니다. 잠시 후 다시 시도해 주세요.');
+                                break;
+                            case 'failure_session_expired':
+                                dialog.showSimpleOk('경고', '세션이 만료되었거나 해당 스케줄을 삭제할 권한이 없습니다.');
+                                break;
+                            case 'success':
+                                dialog.showSimpleOk('알림', '선택한 스케줄을 삭제하였습니다.');
+                                sideHandler.$actionMap['close'].dispatchEvent(new Event('click'));
+                                break;
+                            default:
+                                dialog.showSimpleOk('경고', '서버가 알 수 없는 응답을 반환하였습니다. 잠시 후 다시 시도해 주세요.');
+                        }
+                    };
+                    xhr.open('DELETE', `${origin}/schedule/`);
+                    xhr.send(formData);
                 }
-            },
-            list: {
-                properties: {
-                    styles: true,
-                    startIndex: true,
-                    reversed: true
-                }
-            },
-            mention: {
-                feeds: [{marker: '@', feed: []}]
-            },
-            placeholder: '내용을 입력해 주세요.',
-            table: {contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties']},
-            translations: [translations]
-        }).then((editor) => this.editorInstance = editor);
+            });
+        });
+        sideHandler.actionCallbackMap['modify'].push(() => {
+            if (!this.$element.isVisible()) {
+                return;
+            }
+            sideHandler.hideAllBodies();
+            scheduleModifyHandler.show({
+                schedule: this.lastSchedule
+            });
+        });
+        sideHandler.actionCallbackMap['close'].push(() => {
+            if (!this.$element.isVisible()) {
+                return;
+            }
+            sideHandler.hideAllActions();
+            this.$element.hide();
+        });
     }
 
     #_uploadAnchorOnClick = (e) => {
@@ -374,12 +431,21 @@ class ScheduleViewHandler {
                         <span class="timestamp" data-hy-reference="timestamp"></span>
                         <span class="-flex-stretch" role="none"></span>
                         ${article.mine === true ? `
-                        <a class="action" href="#" data-hy-reference="uploadAttachment">첨부 파일 추가</a>
-                        <a class="action" href="#" data-hy-reference="modify">수정</a>
-                        <a class="action" href="#" data-hy-reference="delete">삭제</a>` : ''}
+                        <a class="action -visible" href="#" data-hy-reference="uploadAttachment">첨부 파일 추가</a>
+                        <a class="action -visible" href="#" data-hy-reference="modify">수정</a>
+                        <a class="action -visible" href="#" data-hy-reference="delete">삭제</a>
+                        <a class="action" href="#" data-hy-reference="modifyCancel">취소</a>
+                        <a class="action" href="#" data-hy-reference="modifyDone">완료</a>` : ''}
                     </div>
                     <div class="image-container" data-hy-reference="imageContainer"></div>
-                    <div class="body content -visible" data-hy-reference="content"></div>
+                    <div class="body content -visible" data-hy-reference="contentBody"></div>
+                    <div class="body modify" data-hy-reference="modifyBody">
+                        <form class="form" data-hy-reference="modifyForm">
+                            <label class="content-label">
+                                <textarea name="content"></textarea>
+                            </label>
+                        </form>                    
+                    </div>
                     <div class="foot" data-hy-reference="foot">
                         <span class="stat" data-hy-reference="commentToggle">
                             <img alt="댓글" class="icon" src="./assets/images/index/schedule/article/comment.png">
@@ -414,7 +480,16 @@ class ScheduleViewHandler {
             $head.querySelector('[data-hy-reference="nickname"]').innerText = article.userNickname;
             $head.querySelector('[data-hy-reference="timestamp"]').innerText = article['createdAt'].split('T').join(' ');
             if (article.mine === true) {
-                $head.querySelector('[data-hy-reference="uploadAttachment"]').addEventListener('click', (e) => {
+                const $uploadAttachment = $head.querySelector('[data-hy-reference="uploadAttachment"]');
+                const $modify = $head.querySelector('[data-hy-reference="modify"]');
+                const $modifyDone = $head.querySelector('[data-hy-reference="modifyDone"]');
+                const $modifyCancel = $head.querySelector('[data-hy-reference="modifyCancel"]');
+                const $modifyForm = $item.querySelector('[data-hy-reference="modifyForm"]');
+                const $delete = $head.querySelector('[data-hy-reference="delete"]');
+                const $contentBody = $item.querySelector('[data-hy-reference="contentBody"]');
+                const $modifyBody = $item.querySelector('[data-hy-reference="modifyBody"]');
+                let modifyEditorInstance;
+                $uploadAttachment.addEventListener('click', (e) => {
                     e.preventDefault();
                     const $input = document.createElement('input');
                     $input.addEventListener('input', () => {
@@ -460,11 +535,76 @@ class ScheduleViewHandler {
                     $input.setAttribute('type', 'file');
                     $input.click();
                 });
-                $head.querySelector('[data-hy-reference="modify"]').addEventListener('click', (e) => {
+                $modify.addEventListener('click', (e) => {
                     e.preventDefault();
-                    alert('수정');
+                    $uploadAttachment.hide();
+                    $modify.hide();
+                    $modifyDone.show();
+                    $modifyCancel.show();
+                    $delete.hide();
+                    if (modifyEditorInstance == null) {
+                        ClassicEditor.create($modifyForm['content'], editorConfig).then((editor) => {
+                            modifyEditorInstance = editor;
+                            modifyEditorInstance.setData(article.content);
+                        });
+                    } else {
+                        modifyEditorInstance.setData(article.content);
+                    }
+                    $contentBody.hide();
+                    $modifyBody.show();
                 });
-                $head.querySelector('[data-hy-reference="delete"]').addEventListener('click', (e) => {
+                $modifyCancel.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    $uploadAttachment.show();
+                    $modify.show();
+                    $modifyDone.hide();
+                    $modifyCancel.hide();
+                    $delete.show();
+                    $modifyForm.hide();
+                    $contentBody.show();
+                    $modifyBody.hide();
+                });
+                $modifyDone.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (modifyEditorInstance.getData().length === 0) {
+                        dialog.showSimpleOk('경고', '게시글 내용을 입력해 주세요.');
+                        return;
+                    }
+                    loading.show();
+                    const xhr = new XMLHttpRequest();
+                    const formData = new FormData();
+                    formData.append('id', article.id.toString());
+                    formData.append('content', modifyEditorInstance.getData());
+                    xhr.onreadystatechange = () => {
+                        if (xhr.readyState !== XMLHttpRequest.DONE) {
+                            return;
+                        }
+                        loading.hide();
+                        if (xhr.status < 200 || xhr.status >= 300) {
+                            dialog.showSimpleOk('오류', '요청을 처리하는 도중 오류가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
+                            return;
+                        }
+                        const response = JSON.parse(xhr.responseText);
+                        switch (response.result) {
+                            case 'failure':
+                                dialog.showSimpleOk('경고', '알 수 없는 이유로 게시글을 수정하지 못하였습니다. 잠시 후 다시 시도해 주세요.');
+                                break;
+                            case 'failure_session_expired':
+                                dialog.showSimpleOk('경고', '세션이 만료되었거나 게시글을 수정할 권한이 없습니다.');
+                                break;
+                            case 'success':
+                                article.content = modifyEditorInstance.getData();
+                                $contentBody.innerHTML = article.content;
+                                $modifyCancel.dispatchEvent(new Event('click'));
+                                break;
+                            default:
+                                dialog.showSimpleOk('경고', '서버가 알 수 없는 응답을 반환하였습니다. 잠시 후 다시 시도해 주세요.');
+                        }
+                    };
+                    xhr.open('PATCH', `${origin}/article/`);
+                    xhr.send(formData);
+                });
+                $delete.addEventListener('click', (e) => {
                     e.preventDefault();
                     dialog.showSimpleYesNo('경고', '정말로 선택한 게시글을 삭제할까요? 해당 게시글에 작성된 댓글과 첨부된 파일이 모두 삭제됩니다.', {
                         onClickYesCallback: () => {
@@ -503,7 +643,7 @@ class ScheduleViewHandler {
                     });
                 });
             }
-            $item.querySelector('[data-hy-reference="content"]').innerHTML = article.content;
+            $item.querySelector('[data-hy-reference="contentBody"]').innerHTML = article.content;
             const $imageContainer = $item.querySelector('[data-hy-reference="imageContainer"]');
             const $commentForm = $item.querySelector('[data-hy-reference="commentForm"]');
             const $commentList = $item.querySelector('[data-hy-reference="commentList"]');
@@ -686,7 +826,7 @@ class ScheduleViewHandler {
                             const contentLabel = new HyLabel({$element: $replyForm.querySelector('[data-hy-reference="contentLabel"]')});
                             contentLabel.setInvalid(false);
                             if (contentLabel.$field.value === '') {
-                                contentLabel.setInvalid(true).$message.innerText = '답글 내용을 입력해 주세요.';;
+                                contentLabel.setInvalid(true).$message.innerText = '답글 내용을 입력해 주세요.';
                             }
                             if (contentLabel.isInvalid()) {
                                 return;
@@ -924,6 +1064,11 @@ class ScheduleViewHandler {
 
     /** @param {{[p: string]: any, scheduleId: number}} args */
     show = (args) => {
+        sideHandler.$title.innerText = '스케줄 조회';
+        sideHandler.hideAllActions();
+        sideHandler.$actionMap['delete'].show();
+        sideHandler.$actionMap['modify'].show();
+        sideHandler.$actionMap['close'].show();
         loading.show();
         fetch(`${origin}/schedule/?id=${args.scheduleId}`, {
             method: 'GET'
@@ -938,6 +1083,7 @@ class ScheduleViewHandler {
             this.#drawLocation(schedule);
             this.#drawAttachmentList(schedule);
             this.#drawArticleList(schedule);
+            sideHandler.hideAllBodies();
             this.$element.show();
         }).catch((error) => {
             console.error(error);
@@ -951,5 +1097,5 @@ class ScheduleViewHandler {
 }
 
 window.scheduleViewHandler = new ScheduleViewHandler({
-    $side: document.getElementById('side')
+    $element: sideHandler.$element.querySelector('[data-hy-reference="body"][data-hy-name="view"]')
 });

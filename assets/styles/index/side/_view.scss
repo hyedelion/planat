@@ -189,6 +189,14 @@
                 > .timestamp {
                     color: $global-text-color-light-lighten-50;
                 }
+
+                > .action {
+                    display: none;
+
+                    &.-visible {
+                        display: revert;
+                    }
+                }
             }
 
             > .image-container {
@@ -241,6 +249,22 @@
 
                 &.-visible {
                     display: revert;
+                }
+
+                &.modify {
+                    padding: 0;
+
+                    .ck-sticky-panel__content {
+                        border: none;
+                    }
+
+                    .ck-editor__editable_inline {
+                        min-height: 10rem;
+                        max-height: 20rem;
+                        border: none;
+                        border-top: 0.0625rem solid $global-background-color-light;
+                        box-shadow: none;
+                    }
                 }
             }
 

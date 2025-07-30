@@ -241,5 +241,6 @@ asideHandler.loadGroups();
 
 import('./index/friend.js');
 import('./index/group.js');
-import('./index/schedule.js');
+// import('./index/schedule.js');
+import('./index/side.js');
 import('./index/main/calendar.js');

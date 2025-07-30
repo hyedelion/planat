@@ -291,25 +291,20 @@
 </main>
 <section id="side">
     <div class="top">
-        <h2 class="title -flex-stretch"></h2>
-        <ul class="menu">
-            <li class="item" data-hy-for="view">
-                <button class="button" name="close" type="button" data-hy-reference="add">
-                    <img alt="" class="icon" draggable="false" src="./assets/images/index/schedule/top.add.png">
-                </button>
-            </li>
-            <li class="item" data-hy-for="view">
-                <button class="button" name="close" type="button" data-hy-reference="delete">
+        <h2 class="title -flex-stretch" data-hy-reference="title"></h2>
+        <ul class="menu" data-hy-reference="topMenu">
+            <li class="item">
+                <button class="button" name="close" type="button" data-hy-reference="action" data-hy-name="delete">
                     <img alt="" class="icon" draggable="false" src="./assets/images/index/schedule/top.delete.png">
                 </button>
             </li>
-            <li class="item" data-hy-for="view">
-                <button class="button" name="close" type="button" data-hy-reference="modify">
+            <li class="item">
+                <button class="button" name="close" type="button" data-hy-reference="action" data-hy-name="modify">
                     <img alt="" class="icon" draggable="false" src="./assets/images/index/schedule/top.modify.png">
                 </button>
             </li>
-            <li class="item" data-hy-for="view modify add">
-                <button class="button" name="close" type="button" data-hy-reference="close">
+            <li class="item">
+                <button class="button" name="close" type="button" data-hy-reference="action" data-hy-name="close">
                     <img alt="" class="icon" draggable="false" src="./assets/images/index/schedule/top.close.png">
                 </button>
             </li>
@@ -344,7 +339,7 @@
         <label data-hy-object="label" data-hy-name="location">
             <span data-hy-component="label.caption">위치</span>
             <span data-hy-component="label.row">
-                <input autocomplete="off" class="-flex-stretch" maxlength="5" minlength="5" name="locationKeyword" placeholder="검색할 장소를 입력해 주세요." type="text" data-hy-object="field" data-hy-theme="box" data-hy-component="label.field">
+                <input autocomplete="off" class="-flex-stretch" maxlength="50" minlength="1" name="locationKeyword" placeholder="검색할 장소를 입력해 주세요." type="text" data-hy-object="field" data-hy-theme="box" data-hy-component="label.field">
                 <button name="locationSearchButton" type="button" data-hy-object="button" data-hy-color="main" data-hy-border-radius="none">
                     <span data-hy-component="button.caption">검색</span>
                 </button>
@@ -411,6 +406,66 @@
             <li class="message" data-hy-reference="message" data-hy-name="error">게시글을 불러오지 못하였습니다.</li>
         </ul>
     </div>
+    <form novalidate class="body modify" data-hy-reference="body" data-hy-name="modify">
+        <label data-hy-object="label" data-hy-name="group">
+            <span data-hy-component="label.caption">그룹</span>
+            <select class="-flex-stretch" name="group" data-hy-object="field" data-hy-theme="box" data-hy-component="label.field">
+                <option value="0">(기본)</option>
+            </select>
+            <span data-hy-component="label.message">그룹을 선택해 주세요.</span>
+        </label>
+        <label data-hy-object="label" data-hy-name="due">
+            <span data-hy-component="label.caption">일시 (시작, 종료)</span>
+            <span data-hy-component="label.row">
+                <input autocomplete="off" class="-flex-stretch" name="startAt" type="datetime-local" data-hy-object="field" data-hy-theme="box" data-hy-component="label.field">
+                <input autocomplete="off" class="-flex-stretch" name="endAt" type="datetime-local" data-hy-object="field" data-hy-theme="box" data-hy-component="label.field">
+            </span>
+            <span data-hy-component="label.message">일시를 선택해 주세요.</span>
+        </label>
+        <label class="check all-day" data-hy-object="checkLabel">
+            <input name="allDay" type="checkbox" data-hy-component="checkLabel.input">
+            <span data-hy-component="checkLabel.box"></span>
+            <span data-hy-component="checkLabel.caption">종일</span>
+        </label>
+        <label data-hy-object="label" data-hy-name="title">
+            <span data-hy-component="label.caption">제목</span>
+            <input autocomplete="off" class="-flex-stretch" maxlength="100" minlength="1" name="title" placeholder="제목을 입력해 주세요." type="text" data-hy-object="field" data-hy-theme="box" data-hy-component="label.field">
+            <span data-hy-component="label.message">제목을 입력해 주세요.</span>
+        </label>
+        <label data-hy-object="label" data-hy-name="location">
+            <span data-hy-component="label.caption">위치</span>
+            <span data-hy-component="label.row">
+                <input autocomplete="off" class="-flex-stretch" maxlength="50" minlength="1" name="locationKeyword" placeholder="검색할 장소를 입력해 주세요." type="text" data-hy-object="field" data-hy-theme="box" data-hy-component="label.field">
+                <button name="locationSearchButton" type="button" data-hy-object="button" data-hy-color="main" data-hy-border-radius="none">
+                    <span data-hy-component="button.caption">검색</span>
+                </button>
+                <button name="locationRemoveButton" type="button" data-hy-object="button" data-hy-color="gray" data-hy-border-radius="none">
+                    <span data-hy-component="button.caption">위치 정보 삭제</span>
+                </button>
+            </span>
+            <span data-hy-component="label.message">검색할 장소를 입력해 주세요.</span>
+        </label>
+        <ul class="location-list" data-hy-reference="locationList">
+            <li class="message -visible" data-hy-reference="message" data-hy-name="empty">검색 결과가 없습니다.</li>
+        </ul>
+        <div class="map" data-hy-reference="map"></div>
+        <label class="address-label" data-hy-object="label" data-hy-name="address">
+            <span data-hy-component="label.caption">주소</span>
+            <input readonly autocomplete="off" class="-flex-stretch" maxlength="100" minlength="1" name="addressPrimary" type="text" data-hy-object="field" data-hy-theme="box" data-hy-component="label.field">
+            <input autocomplete="off" class="-flex-stretch" maxlength="100" minlength="0" name="addressSecondary" placeholder="상세 주소를 입력해 주세요." type="text" data-hy-object="field" data-hy-theme="box" data-hy-component="label.field">
+            <input hidden readonly name="latitude" type="hidden">
+            <input hidden readonly name="longitude" type="hidden">
+        </label>
+        <div class="-flex-stretch"></div>
+        <div class="button-container">
+            <button name="cancel" type="button" data-hy-object="button" data-hy-color="gray" data-hy-border-radius="none">
+                <span data-hy-component="button.caption">취소</span>
+            </button>
+            <button type="submit" data-hy-object="button" data-hy-color="main" data-hy-border-radius="none">
+                <span data-hy-component="button.caption">수정</span>
+            </button>
+        </div>
+    </form>
 </section>
 </body>
 </html>

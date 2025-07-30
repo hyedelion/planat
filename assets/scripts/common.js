@@ -46,7 +46,7 @@ Date.prototype.toFormattedTime = function (args = {separator: ':', includeSecond
 
 /** @param {{dateTimeSeparator?: string, dateSeparator?: string, timeSeparator?: string, includeSeconds?: boolean}} args */
 Date.prototype.toFormattedDateTime = function (args = {dateTimeSeparator: ' ', dateSeparator: '-', timeSeparator: ':', includeSeconds: true}) {
-    return `${this.toFormattedDate(dateSeparator)}${dateTimeSeparator}${this.toFormattedTime(timeSeparator, includeSeconds)}`;
+    return `${this.toFormattedDate({separator: args.dateSeparator})}${args.dateTimeSeparator}${this.toFormattedTime({separator: args.timeSeparator, includeSeconds: args.includeSeconds})}`;
 }
 
 window.origin = 'http://172.17.0.27:8080';

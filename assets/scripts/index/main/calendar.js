@@ -46,7 +46,7 @@ const draw = (targetYear, targetMonth) => {
     loading.show();
     $cellContainer.innerHTML = '';
     $cachedSchedules.splice(0, $cachedSchedules.length);
-    Promise.all([loadGroups(), loadSchedules(currentMonthFirstDate.toISOString().split('Z')[0], currentMonthLastDate.toISOString().split('Z')[0])]).then(([groups, schedules]) => {
+    Promise.all([loadGroups(), loadSchedules(currentMonthFirstDate.toFormattedDate() + 'T00:00:00', currentMonthLastDate.toFormattedDate() + 'T23:59:59')]).then(([groups, schedules]) => {
         const $days = [];
         const groupMap = groups.reduce((map, group) => (map[group['groupId']] = group, map), {});
         schedules.forEach((schedule) => {
@@ -95,8 +95,7 @@ const draw = (targetYear, targetMonth) => {
                 if (!$day.classList.contains('previous-month') && !$day.classList.contains('next-month')) {
                     $day.addEventListener('click', (e) => {
                         if (e.target.getAttribute('data-hy-reference') !== 'schedule') {
-                            scheduleHandler.show({
-                                mode: 'add',
+                            scheduleAddHandler.show({
                                 initDate: `${targetYear}-${targetMonth.toString().padStart(2, '0')}-${date.toString().padStart(2, '0')}`
                             });
                         }
