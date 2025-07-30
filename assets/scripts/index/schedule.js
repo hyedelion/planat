@@ -54,89 +54,10 @@ import {HyLabel} from "../common/object/label.js";
 
 const editorConfig = {
     toolbar: {
-        items: [
-            'undo',
-            'redo',
-            '|',
-            'findAndReplace',
-            '|',
-            'fontSize',
-            'fontFamily',
-            'fontColor',
-            'fontBackgroundColor',
-            '|',
-            'bold',
-            'italic',
-            'underline',
-            'strikethrough',
-            'removeFormat',
-            '|',
-            'link',
-            'insertImage',
-            'mediaEmbed',
-            'insertTable',
-            'highlight',
-            'blockQuote',
-            '|',
-            'alignment',
-            '|',
-            'bulletedList',
-            'numberedList',
-            'todoList',
-            'outdent',
-            'indent'
-        ],
+        items: ['undo', 'redo', '|', 'findAndReplace', '|', 'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', '|', 'bold', 'italic', 'underline', 'strikethrough', 'removeFormat', '|', 'link', 'insertImage', 'mediaEmbed', 'insertTable', 'highlight', 'blockQuote', '|', 'alignment', '|', 'bulletedList', 'numberedList', 'todoList', 'outdent', 'indent'],
         shouldNotGroupWhenFull: true
     },
-    plugins: [
-        Alignment,
-        Autoformat,
-        AutoImage,
-        Autosave,
-        BlockQuote,
-        Bold,
-        Essentials,
-        FindAndReplace,
-        FontBackgroundColor,
-        FontColor,
-        FontFamily,
-        FontSize,
-        GeneralHtmlSupport,
-        Highlight,
-        ImageBlock,
-        ImageCaption,
-        ImageInline,
-        ImageInsert,
-        ImageInsertViaUrl,
-        ImageResize,
-        ImageStyle,
-        ImageTextAlternative,
-        ImageToolbar,
-        ImageUpload,
-        Indent,
-        IndentBlock,
-        Italic,
-        Link,
-        LinkImage,
-        List,
-        ListProperties,
-        MediaEmbed,
-        Mention,
-        Paragraph,
-        PasteFromOffice,
-        RemoveFormat,
-        SimpleUploadAdapter,
-        Strikethrough,
-        Table,
-        TableCaption,
-        TableCellProperties,
-        TableColumnResize,
-        TableProperties,
-        TableToolbar,
-        TextTransformation,
-        TodoList,
-        Underline
-    ],
+    plugins: [Alignment, Autoformat, AutoImage, Autosave, BlockQuote, Bold, Essentials, FindAndReplace, FontBackgroundColor, FontColor, FontFamily, FontSize, GeneralHtmlSupport, Highlight, ImageBlock, ImageCaption, ImageInline, ImageInsert, ImageInsertViaUrl, ImageResize, ImageStyle, ImageTextAlternative, ImageToolbar, ImageUpload, Indent, IndentBlock, Italic, Link, LinkImage, List, ListProperties, MediaEmbed, Mention, Paragraph, PasteFromOffice, RemoveFormat, SimpleUploadAdapter, Strikethrough, Table, TableCaption, TableCellProperties, TableColumnResize, TableProperties, TableToolbar, TextTransformation, TodoList, Underline],
     fontFamily: {
         supportAllValues: true
     },
@@ -155,16 +76,7 @@ const editorConfig = {
         ]
     },
     image: {
-        toolbar: [
-            'toggleImageCaption',
-            'imageTextAlternative',
-            '|',
-            'imageStyle:inline',
-            'imageStyle:wrapText',
-            'imageStyle:breakText',
-            '|',
-            'resizeImage'
-        ]
+        toolbar: ['toggleImageCaption', 'imageTextAlternative', '|', 'imageStyle:inline', 'imageStyle:wrapText', 'imageStyle:breakText', '|', 'resizeImage']
     },
     initialData: '',
     language: 'ko',
@@ -402,11 +314,251 @@ class ScheduleHandler {
      *     $articleList?: HTMLUListElement,
      *     $articleListMessageMap?: {[p: string]: HTMLLIElement},
      *     mapInstance?: google.maps.Map,
+     *     appendComments: function(HTMLUListElement, {[p: string]: any}[], {[p: string]: any}[], number),
+     *     onAttachmentItemDeleteClick?: function(PointerEvent?, {[p: string]: any}, HTMLLIElement),
+     *     onCommentDeleteClick?: function(Event?, {[p: string]:any}, HTMLUListElement),
+     *     onCommentModifyApplyClick?: function(Event?, {[p: string]: any}, HTMLLIElement),
+     *     onCommentUploadAttachmentClick?: function(Event?, {[p: string]: any}, HTMLElement, HTMLUListElement),
      *     onUploadAnchorClick?: function(PointerEvent?)
      * }} */
     view = {
         $attachmentMessageMap: {},
         $articleListMessageMap: {},
+        appendComments: ($commentList, filteredComments, wholeComments, step = 0) => {
+            for (const comment of filteredComments) {
+                const $item = new DOMParser().parseFromString(`
+                    <li class="item ${comment['commentId'] == null ? 'root' : 'sub'}" data-hy-reference="item" data-hy-step="${step}">
+                        <div class="head">
+                            <span class="nickname">${comment['userNickname']}</span>
+                            <span class="timestamp -flex-stretch">${comment['createdAt'].split('T').join(' ')}</span>
+                            ${comment['mine'] === true ? `
+                            <a class="action modify-cancel" data-hy-reference="modifyCancel">취소</a>
+                            <a class="action modify-apply" data-hy-reference="modifyApply">완료</a>
+                            <a class="action modify" data-hy-reference="modify">수정</a>
+                            <a class="action delete" data-hy-reference="delete">삭제</a>` : ''}
+                        </div>                                
+                        <div class="body content" data-hy-reference="content">${comment['content']}</div>
+                        <div class="body modify">
+                            <label data-hy-object="label" data-hy-name="value" data-hy-reference="contentLabel">
+                                <input autocomplete="email" class="-flex-stretch" maxlength="500" minlength="1" name="content" placeholder="수정할 내용을 입력해 주세요." type="text" value="${comment['content']}" data-hy-object="field" data-hy-component="label.field">
+                                <span data-hy-component="label.message">수정할 내용을 입력해 주세요.</span>
+                            </label>
+                        </div>
+                    </li>`, 'text/html').querySelector('[data-hy-reference="item"]');
+                $item.querySelector('[data-hy-reference="modify"]')?.addEventListener('click', () => {
+                    const contentLabel = new HyLabel({$element: $item.querySelector('[data-hy-reference="contentLabel"]')});
+                    $item.classList.add('modifying');
+                    contentLabel.$field.value = comment['content'];
+                    contentLabel.$field.focus();
+                });
+                $item.querySelector('[data-hy-reference="modifyCancel"]')?.addEventListener('click', () => $item.classList.remove('modifying'));
+                $item.querySelector('[data-hy-reference="modifyApply"]')?.addEventListener('click', (e) => this.view.onCommentModifyApplyClick(e, comment, $item));
+                $item.querySelector('[data-hy-reference="delete"]')?.addEventListener('click', (e) => this.view.onCommentDeleteClick(e, comment, $commentList));
+                $item.style.marginLeft = `${step}rem`;
+                $commentList.append($item);
+                const subComments = wholeComments.filter((x) => comment['id'] === x['commentId']);
+                if (subComments.length > 0) {
+                    this.view.appendComments($commentList, subComments, wholeComments, step + 1);
+                }
+            }
+        },
+        onAttachmentItemDeleteClick: (e, attachment, $item) => {
+            e.preventDefault();
+            dialog.showSimpleYesNo('경고', `정말로 선택한 첨부 파일(${attachment['name']})을 삭제할까요?`, {
+                onClickYesCallback: () => {
+                    loading.show();
+                    const xhr = new XMLHttpRequest();
+                    const formData = new FormData();
+                    formData.append('id', attachment['id']);
+                    xhr.onreadystatechange = () => {
+                        if (xhr.readyState !== XMLHttpRequest.DONE) {
+                            return;
+                        }
+                        loading.hide();
+                        if (xhr.status < 200 || xhr.status >= 300) {
+                            dialog.showSimpleOk('오류', '요청을 처리하는 도중 오류가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
+                            return;
+                        }
+                        const response = JSON.parse(xhr.responseText);
+                        switch (response.result) {
+                            case 'failure_session_expired':
+                                dialog.showSimpleOk('경고', '첨부 파일을 삭제하지 못하였습니다. 세션이 만료되었거나 권한이 없습니다.');
+                                break;
+                            case 'success':
+                                dialog.showSimpleOk('알림', '첨부 파일을 성공적으로 삭제하였습니다.', {
+                                    onClickOkCallback: () => {
+                                        $item.remove();
+                                        if (this.view.$attachmentList.querySelectorAll('[data-hy-reference="item"]').length === 0) {
+                                            this.view.$attachmentMessageMap['empty'].show();
+                                        }
+                                    }
+                                });
+                                break;
+                            default:
+                                dialog.showSimpleOk('경고', '서버가 알 수 없는 응답을 반환하였습니다. 잠시 후 다시 시도해 주세요.');
+                        }
+                    };
+                    xhr.open('DELETE', `${origin}/attachment/`);
+                    xhr.send(formData);
+                }
+            });
+        },
+        onCommentDeleteClick: (e, comment, $commentList) => {
+            dialog.showSimpleYesNo('경고', '정말로 선택한 댓글을 삭제할까요?', {
+                onClickYesCallback: () => {
+                    loading.show();
+                    const xhr = new XMLHttpRequest();
+                    const formData = new FormData();
+                    formData.append('id', comment['id']);
+                    xhr.onreadystatechange = () => {
+                        if (xhr.readyState !== XMLHttpRequest.DONE) {
+                            return;
+                        }
+                        loading.hide();
+                        if (xhr.status < 200 || xhr.status >= 300) {
+                            dialog.showSimpleOk('오류', '요청을 처리하는 도중 오류가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
+                            return;
+                        }
+                        const response = JSON.parse(xhr.responseText);
+                        switch (response.result) {
+                            case 'failure':
+                                dialog.showSimpleOk('경고', '알 수 없는 이유로 댓글을 삭제하지 못하였습니다. 잠시 후 다시 시도해 주세요.');
+                                break;
+                            case 'failure_session_expired':
+                                dialog.showSimpleOk('경고', '세션이 만료되었거나 댓글을 삭제할 권한이 없습니다.');
+                                break;
+                            case 'success':
+                                loading.show();
+                                $commentList.querySelectorAll('[data-hy-reference="item"]').forEach(($item) => $item.remove());
+                                const xhr = new XMLHttpRequest();
+                                xhr.onreadystatechange = () => {
+                                    if (xhr.readyState !== XMLHttpRequest.DONE) {
+                                        return;
+                                    }
+                                    loading.hide();
+                                    if (xhr.status < 200 || xhr.status >= 300) {
+                                        dialog.showSimpleOk('오류', '요청을 처리하는 도중 오류가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
+                                        return;
+                                    }
+                                    const comments = JSON.parse(xhr.responseText);
+                                    if (comments.length === 0) {
+                                        $commentList.querySelector('[data-hy-reference="message"][data-hy-name="empty"]').show();
+                                    } else {
+                                        this.view.appendComments($commentList, comments.filter((comment) => comment['commentId'] == null), comments, 0);
+                                    }
+                                };
+                                xhr.open('GET', `${origin}/comment/all?articleId=${comment['articleId']}`);
+                                xhr.send();
+                                break;
+                            default:
+                                dialog.showSimpleOk('경고', '서버가 알 수 없는 응답을 반환하였습니다. 잠시 후 다시 시도해 주세요.');
+                        }
+                    };
+                    xhr.open('DELETE', `${origin}/comment/`);
+                    xhr.send(formData);
+                }
+            });
+        },
+        onCommentModifyApplyClick: (e, comment, $item) => {
+            const contentLabel = new HyLabel({$element: $item.querySelector('[data-hy-reference="contentLabel"]')});
+            if (contentLabel.$field.value === '') {
+                contentLabel.setInvalid(true).$message.innerText = '수정할 내용을 입력해 주세요.';
+            }
+            if (contentLabel.isInvalid() === true) {
+                return;
+            }
+            loading.show();
+            const xhr = new XMLHttpRequest();
+            const formData = new FormData();
+            formData.append('id', comment['id']);
+            formData.append('content', contentLabel.$field.value);
+            xhr.onreadystatechange = () => {
+                if (xhr.readyState !== XMLHttpRequest.DONE) {
+                    return;
+                }
+                loading.hide();
+                if (xhr.status < 200 || xhr.status >= 300) {
+                    dialog.showSimpleOk('오류', '요청을 처리하는 도중 오류가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
+                    return;
+                }
+                const response = JSON.parse(xhr.responseText);
+                switch (response.result) {
+                    case 'failure':
+                        dialog.showSimpleOk('경고', '알 수 없는 이유로 댓글을 수정하지 못하였습니다. 잠시 후 다시 시도해 주세요.');
+                        break;
+                    case 'failure_session_expired':
+                        dialog.showSimpleOk('경고', '세션이 만료되었거나 댓글을 수정할 권한이 없습니다.');
+                        break;
+                    case 'success':
+                        comment['content'] = contentLabel.$field.value;
+                        $item.querySelector('[data-hy-reference="content"]').innerText = comment['content'];
+                        $item.classList.remove('modifying');
+                        break;
+                    default:
+                        dialog.showSimpleOk('경고', '서버가 알 수 없는 응답을 반환하였습니다. 잠시 후 다시 시도해 주세요.');
+                }
+            };
+            xhr.open('PATCH', `${origin}/comment/`);
+            xhr.send(formData);
+        },
+        onCommentUploadAttachmentClick: (e, article, $attachmentCount, $attachmentList) => {
+            e.preventDefault();
+            const $input = document.createElement('input');
+            $input.addEventListener('input', () => {
+                for (const file of $input.files) {
+                    loading.show();
+                    const xhr = new XMLHttpRequest();
+                    const formData = new FormData();
+                    formData.append('articleId', article['id']);
+                    formData.append('_file', file);
+                    xhr.onreadystatechange = () => {
+                        if (xhr.readyState !== XMLHttpRequest.DONE) {
+                            return;
+                        }
+                        loading.hide();
+                        if (xhr.status < 200 || xhr.status >= 300) {
+                            dialog.showSimpleOk('오류', '요청을 처리하는 도중 오류가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
+                            return;
+                        }
+                        const response = JSON.parse(xhr.responseText);
+                        switch (response['result']) {
+                            case 'failure':
+                                dialog.showSimpleOk('경고', '알 수 없는 이유로 첨부 파일을 업로드하지 못하였습니다. 잠시 후 다시 시도해 주세요.');
+                                break;
+                            case 'success':
+                                let size = file.size;
+                                if (size >= 1048576) {
+                                    size = (Math.trunc(size / 1048576 * 100) / 100).toLocaleString() + 'MB';
+                                } else if (size >= 1024) {
+                                    size = (Math.trunc(size / 1024 * 100) / 100).toLocaleString() + 'KB';
+                                } else {
+                                    size = size.toLocaleString() + 'Byte';
+                                }
+                                const $item = new DOMParser().parseFromString(`
+                                    <li class="item uploading" data-hy-reference="item">
+                                        <a class="name" data-hy-reference="anchor">${file.name}</a>
+                                        <span class="size">${size}</span>
+                                        <span class="-flex-stretch"></span>
+                                        <a class="action" data-hy-reference="delete">삭제</a>
+                                    </li>`, 'text/html').querySelector('[data-hy-reference="item"]');
+                                const $anchor = $item.querySelector('[data-hy-reference="anchor"]');
+                                $anchor.setAttribute('href', `${origin}/attachment/?id=${response['id']}`);
+                                $anchor.setAttribute('target', '_blank');
+                                $attachmentList.append($item);
+                                $attachmentCount.innerText = (parseInt($attachmentCount.innerText) + 1).toLocaleString();
+                                break;
+                            default:
+                                dialog.showSimpleOk('경고', '서버가 알 수 없는 응답을 반환하였습니다. 잠시 후 다시 시도해 주세요.');
+                        }
+                    };
+                    xhr.open('POST', `${origin}/attachment/`);
+                    xhr.send(formData);
+                }
+            });
+            $input.setAttribute('multiple', '');
+            $input.setAttribute('type', 'file');
+            $input.click();
+        },
         onUploadAnchorClick: (e) => {
             e.preventDefault();
             const $input = document.createElement('input');
@@ -461,6 +613,7 @@ class ScheduleHandler {
                             $anchor.setAttribute('href', `${origin}/attachment/?id=${response.id}`);
                             $anchor.setAttribute('target', '_blank');
                             xhr.upload.onload(null);
+                            this.view.$attachmentMessageMap['empty'].hide();
                         } else {
                             xhr.upload.onerror(null);
                         }
@@ -668,6 +821,7 @@ class ScheduleHandler {
                 this.view.$addressSecondary.innerText = /** @type {string} */ schedule['addressSecondary'] ?? '';
                 this.view.$location.show();
             }
+            this.view.$articleCount.innerText = schedule['articles'].length.toLocaleString();
             if (schedule['attachments'].length > 0) {
                 this.view.$attachmentMessageMap['empty'].hide();
                 for (const attachment of schedule['attachments']) {
@@ -687,46 +841,10 @@ class ScheduleHandler {
                             ${schedule['mine'] === true ? '<a class="action" href="#" data-hy-reference="deleteAnchor">삭제</a>' : ''}
                         </li>`, 'text/html').querySelector('[data-hy-reference="item"]');
                     const $deleteAnchor = $item.querySelector('[data-hy-reference="deleteAnchor"]');
-                    $deleteAnchor?.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        dialog.showSimpleYesNo('경고', `정말로 선택한 첨부 파일(${attachment['name']})을 삭제할까요?`, {
-                            onClickYesCallback: () => {
-                                loading.show();
-                                const xhr = new XMLHttpRequest();
-                                const formData = new FormData();
-                                formData.append('id', attachment['id']);
-                                xhr.onreadystatechange = () => {
-                                    if (xhr.readyState !== XMLHttpRequest.DONE) {
-                                        return;
-                                    }
-                                    loading.hide();
-                                    if (xhr.status < 200 || xhr.status >= 300) {
-                                        dialog.showSimpleOk('오류', '요청을 처리하는 도중 오류가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
-                                        return;
-                                    }
-                                    const response = JSON.parse(xhr.responseText);
-                                    switch (response.result) {
-                                        case 'failure_session_expired':
-                                            dialog.showSimpleOk('경고', '첨부 파일을 삭제하지 못하였습니다. 세션이 만료되었거나 권한이 없습니다.');
-                                            break;
-                                        case 'success':
-                                            dialog.showSimpleOk('알림', '첨부 파일을 성공적으로 삭제하였습니다.', {
-                                                onClickOkCallback: () => $item.remove()
-                                            });
-                                            break;
-                                        default:
-                                            dialog.showSimpleOk('경고', '서버가 알 수 없는 응답을 반환하였습니다. 잠시 후 다시 시도해 주세요.');
-                                    }
-                                };
-                                xhr.open('DELETE', `${origin}/attachment/`);
-                                xhr.send(formData);
-                            }
-                        });
-                    });
+                    $deleteAnchor?.addEventListener('click', (e) => this.view.onAttachmentItemDeleteClick(e, attachment, $item));
                     this.view.$attachmentList.append($item);
                 }
             }
-            this.view.$articleCount.innerText = schedule['articles'].length.toLocaleString();
             if (schedule['articles'].length > 0) {
                 this.view.$articleListMessageMap['empty'].hide();
                 for (const article of schedule['articles']) {
@@ -740,14 +858,16 @@ class ScheduleHandler {
                             <div class="image-container" data-hy-reference="imageContainer"></div>
                             <div class="content" data-hy-reference="content"></div>
                             <div class="foot">
-                                <span class="stat">
+                                <span class="stat" data-hy-reference="commentStat">
                                     <img alt="댓글" class="icon" src="./assets/images/index/schedule/article/comment.png">
-                                    <span class="caption">${article['comments'].length.toLocaleString()}</span>
+                                    <span class="caption" data-hy-reference="commentCount">${article['comments'].length.toLocaleString()}</span>
                                 </span>
-                                <span class="stat">
+                                <span class="stat" data-hy-reference="attachmentStat">
                                     <img alt="첨부 파일" class="icon" src="./assets/images/index/schedule/article/attachment.png">
-                                    <span class="caption">${article['attachments'].length.toLocaleString()}</span>
+                                    <span class="caption" data-hy-reference="attachmentCount">${article['attachments'].length.toLocaleString()}</span>
                                 </span>
+                                <span class="-flex-stretch" role="none"></span>
+                                ${article['mine'] === true ? '<span class="action" data-hy-reference="uploadAttachment">첨부파일 추가</span>' : ''}
                             </div>
                         </li>`, 'text/html').querySelector('[data-hy-reference="item"]');
                     const imageAttachments = article['attachments'].filter((attachment) => attachment['contentType'].startsWith('image/'));
@@ -764,7 +884,67 @@ class ScheduleHandler {
                     }
                     const $content = $item.querySelector('[data-hy-reference="content"]');
                     $content.innerHTML = article['content'];
+                    const $commentStat = $item.querySelector('[data-hy-reference="commentStat"]');
+                    const $commentSubItem = new DOMParser().parseFromString(`
+                        <li class="sub-item" data-hy-reference="subItem">
+                            <ul class="list comment" data-hy-reference="commentList">
+                                <li class="message" data-hy-reference="message" data-hy-name="empty">댓글이 없습니다.</li>
+                            </ul>
+                        </li>
+                    `, 'text/html').querySelector('[data-hy-reference="subItem"]');
+                    const $commentList = $commentSubItem.querySelector('[data-hy-reference="commentList"]');
+                    if (article['comments'].length === 0) {
+                        $commentList.querySelector('[data-hy-reference="message"][data-hy-name="empty"]').show();
+                    } else {
+                        this.view.appendComments($commentList, article['comments'].filter((comment) => comment['commentId'] == null), article['comments'], 0);
+                    }
+                    const $attachmentStat = $item.querySelector('[data-hy-reference="attachmentStat"]');
+                    const $attachmentSubItem = new DOMParser().parseFromString(`
+                        <li class="sub-item" data-hy-reference="subItem">
+                            <ul class="list attachment" data-hy-reference="attachmentList">
+                                <li class="message" data-hy-reference="message" data-hy-name="empty">첨부파일이 없습니다.</li>
+                            </ul>
+                        </li>
+                    `, 'text/html').querySelector('[data-hy-reference="subItem"]');
+                    const $attachmentList = $attachmentSubItem.querySelector('[data-hy-reference="attachmentList"]');
+                    if (article['attachments'].length === 0) {
+                        $attachmentList.querySelector('[data-hy-reference="message"][data-hy-name="empty"]').show();
+                    } else {
+                        for (const attachment of article['attachments']) {
+                            let size = attachment['size'];
+                            if (size >= 1048576) {
+                                size = (Math.trunc(size / 1048576 * 100) / 100).toLocaleString() + 'MB';
+                            } else if (size >= 1024) {
+                                size = (Math.trunc(size / 1024 * 100) / 100).toLocaleString() + 'KB';
+                            } else {
+                                size = size.toLocaleString() + 'Byte';
+                            }
+                            const $item = new DOMParser().parseFromString(`
+                                <li class="item uploading" data-hy-reference="item">
+                                    <a class="name" data-hy-reference="anchor">${attachment['name']}</a>
+                                    <span class="size -flex-stretch">${size}</span>
+                                    <a class="action" data-hy-reference="delete">삭제</a>
+                                </li>`, 'text/html').querySelector('[data-hy-reference="item"]');
+                            const $anchor = $item.querySelector('[data-hy-reference="anchor"]');
+                            $anchor.setAttribute('href', `${origin}/attachment/?id=${attachment['id']}`);
+                            $anchor.setAttribute('target', '_blank');
+                            $attachmentList.append($item);
+                        }
+                    }
+                    $commentStat.addEventListener('click', () => {
+                        $attachmentSubItem.setVisible(false);
+                        $commentSubItem.setVisible(!$commentSubItem.isVisible());
+                    });
+                    $attachmentStat.addEventListener('click', () => {
+                        $commentSubItem.setVisible(false);
+                        $attachmentSubItem.setVisible(!$attachmentSubItem.isVisible());
+                    });
+                    const $attachmentCount = $item.querySelector('[data-hy-reference="attachmentCount"]');
+                    const $uploadAttachment = $item.querySelector('[data-hy-reference="uploadAttachment"]');
+                    $uploadAttachment?.addEventListener('click', (e) => this.view.onCommentUploadAttachmentClick(e, article, $attachmentCount, $attachmentList));
                     this.view.$articleList.append($item);
+                    this.view.$articleList.append($commentSubItem);
+                    this.view.$articleList.append($attachmentSubItem);
                 }
             }
             this.$element.show();
@@ -774,8 +954,4 @@ class ScheduleHandler {
     }
 }
 
-window.scheduleHandler = new ScheduleHandler();
-
-// scheduleHandler.show({
-//     mode: 'add'
-// });
+import ('./side/view.js');

@@ -29,11 +29,24 @@ HTMLElement.prototype.show = function () {
     return this;
 }
 
-Date.prototype.formatToDate = function () {
-    const year = this.getFullYear();
-    const month = String(this.getMonth() + 1).padStart(2, '0');
-    const day = String(this.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
+/** @param {{separator?: string}} args */
+Date.prototype.toFormattedDate = function (args = {separator: '-'}) {
+    args ??= {};
+    args.separator ??= '-';
+    return `${this.getFullYear().toString().padStart(4, '0')}${args.separator}${(this.getMonth() + 1).toString().padStart(2, '0')}${args.separator}${this.getDate().toString().padStart(2, '0')}`;
+}
+
+/** @param {{separator?: string, includeSeconds?: boolean}} args */
+Date.prototype.toFormattedTime = function (args = {separator: ':', includeSeconds: true}) {
+    args ??= {};
+    args.separator ??= ':';
+    args.includeSeconds ??= true;
+    return `${this.getHours().toString().padStart(2, '0')}${args.separator}${this.getMinutes().toString().padStart(2, '0')}${args.separator}${args.includeSeconds === true ? this.getSeconds().toString().padStart(2, '0') : ''}`;
+}
+
+/** @param {{dateTimeSeparator?: string, dateSeparator?: string, timeSeparator?: string, includeSeconds?: boolean}} args */
+Date.prototype.toFormattedDateTime = function (args = {dateTimeSeparator: ' ', dateSeparator: '-', timeSeparator: ':', includeSeconds: true}) {
+    return `${this.toFormattedDate(dateSeparator)}${dateTimeSeparator}${this.toFormattedTime(timeSeparator, includeSeconds)}`;
 }
 
 window.origin = 'http://172.17.0.27:8080';

@@ -289,7 +289,7 @@
         <div class="cell-container" data-hy-reference="cellContainer"></div>
     </div>
 </main>
-<section id="schedule" data-hy-mode="view">
+<section id="side">
     <div class="top">
         <h2 class="title -flex-stretch"></h2>
         <ul class="menu">
@@ -389,14 +389,26 @@
             </div>
         </div>
         <ul class="attachment-list" data-hy-reference="attachmentList">
-            <li class="message" data-hy-reference="message" data-hy-name="empty">첨부 파일이 없습니다.</li>
+            <li class="message -visible" data-hy-reference="message" data-hy-name="empty">첨부 파일이 없습니다.</li>
+            <li class="message" data-hy-reference="message" data-hy-name="error">첨부 파일 목록을 불러오지 못하였습니다.</li>
         </ul>
         <div class="attachment-action-container">
-            <a class="action" href="#" data-hy-reference="uploadAnchor">파일 추가</a>
+            <a class="action" href="#" data-hy-reference="uploadAnchor">첨부 파일 추가</a>
         </div>
         <ul class="article-list" data-hy-reference="articleList">
             <li class="title">게시글 (<span data-hy-reference="articleCount">0</span>)</li>
+            <li class="write-form-wrapper">
+                <form novalidate class="write-form" data-hy-reference="writeForm">
+                    <label class="content-label">
+                        <textarea name="content"></textarea>
+                    </label>
+                    <button type="submit" data-hy-object="button" data-hy-color="main" data-hy-border-radius="none">
+                        <span data-hy-component="button.caption">새로운 게시글 작성하기</span>
+                    </button>
+                </form>
+            </li>
             <li class="message" data-hy-reference="message" data-hy-name="empty">게시글이 없습니다.</li>
+            <li class="message" data-hy-reference="message" data-hy-name="error">게시글을 불러오지 못하였습니다.</li>
         </ul>
     </div>
 </section>

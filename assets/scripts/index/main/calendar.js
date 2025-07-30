@@ -146,10 +146,7 @@ const draw = (targetYear, targetMonth) => {
                 $children[index].remove();
                 $cachedSchedules.push($schedule);
                 $schedule.addEventListener('click', () => {
-                    scheduleHandler.show({
-                        mode: 'view',
-                        scheduleId: schedule['id']
-                    });
+                    scheduleViewHandler.show({scheduleId: schedule['id']});
                 });
                 $schedule.addEventListener('mouseover', () => {
                     $cachedSchedules.filter(($cachedSchedule) => $schedule.getAttribute('data-hy-id') === $cachedSchedule.getAttribute('data-hy-id')).forEach(($schedule) => {

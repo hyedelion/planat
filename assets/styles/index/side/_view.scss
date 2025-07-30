@@ -1,0 +1,390 @@
+@charset "UTF-8";
+
+@import "./../../_def";
+
+#side > .body.view {
+    > .title {
+        @include flex(row, center, flex-start, 0.5rem);
+        color: $global-text-color-light-lighten-30;
+
+        > .title {
+            font-size: 1.375rem;
+            font-weight: 100;
+        }
+    }
+
+    > .location {
+        @include flex(column, stretch, flex-start, 0.5rem);
+        display: none;
+
+        &.-visible {
+            display: flex;
+        }
+
+        > .map {
+            height: 10rem;
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        > .address-container {
+            @include flex(row, center, flex-start, 0.25rem);
+            color: $global-text-color-light-lighten-50;
+
+            > .postal {
+                &::before {
+                    content: '(';
+                }
+
+                &::after {
+                    content: ')';
+                }
+            }
+        }
+    }
+
+    > .attachment-list {
+        @include flex(column, stretch, flex-start, 0.375rem);
+        background-color: $global-background-color-light-lighten-5;
+        border-radius: 0.5rem;
+        font-size: 0.75rem;
+        padding: 0.75rem;
+
+        > .message {
+            color: $global-text-color-light-lighten-40;
+            display: none;
+            padding: 0.75rem;
+            text-align: center;
+
+            &.-visible {
+                display: block;
+            }
+        }
+
+        > .item {
+            @include flex(row, center, flex-start, 0.5rem);
+
+            &.uploading > .name {
+                color: $global-text-color-light-lighten-40;
+
+                &:hover {
+                    text-decoration: none;
+                }
+            }
+
+            > .name {
+                color: #3498db;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+
+            > .size {
+                color: $global-text-color-light-lighten-50;
+                font-size: 0.75rem;
+
+                &::before {
+                    content: '(';
+                }
+
+                &::after {
+                    content: ')';
+                }
+            }
+
+            > .status {
+                &.working {
+                    color: #3498db;
+                }
+
+                &.error {
+                    color: #e74c3c;
+                }
+
+                &.complete {
+                    color: #17a589;
+                }
+            }
+        }
+    }
+
+    > .attachment-action-container {
+        @include flex(row, center, flex-end, 0.25rem);
+        margin-top: -0.5rem;
+
+        > .action {
+            display: none;
+
+            &.-visible {
+                display: block;
+            }
+        }
+    }
+
+    > .article-list {
+        @include flex(column, stretch, flex-start, 0.5rem);
+
+        > .title {
+            color: $global-text-color-light-lighten-30;
+            font-size: 1rem;
+            font-weight: 100;
+        }
+
+        > .write-form-wrapper > .write-form {
+            @include flex(column, stretch, flex-start, 0.5rem);
+
+
+            > .content-label {
+                border: 0.0625rem solid $global-border-color-light;
+                border-radius: 0.5rem;
+                overflow: hidden;
+
+                .ck-sticky-panel__content {
+                    border: none;
+                    border-bottom: 0.0625rem solid $global-border-color-light;
+                    border-top-left-radius: 0.5rem;
+                    border-top-right-radius: 0.5rem;
+                }
+
+                .ck-editor__editable_inline {
+                    min-height: 10rem;
+                    max-height: 20rem;
+                    border: none;
+                    border-bottom-left-radius: 0.5rem;
+                    border-bottom-right-radius: 0.5rem;
+                    box-shadow: none;
+                }
+            }
+        }
+
+        > .message {
+            background-color: $global-background-color-light-lighten-5;
+            border-radius: 0.5rem;
+            color: $global-text-color-light-lighten-40;
+            display: none;
+            font-style: italic;
+            line-height: 1.375;
+            padding: 1rem;
+            text-align: center;
+
+            &.-visible {
+                display: block;
+            }
+        }
+
+        > .item {
+            @include flex(column, stretch, flex-start);
+            overflow: hidden;
+
+            > .head {
+                @include flex(row, center, flex-start, 0.5rem);
+                background-color: $global-background-color-light-lighten-5;
+                border-bottom: 0.0625rem solid $global-background-color-light;
+                border-top-left-radius: 0.5rem;
+                border-top-right-radius: 0.5rem;
+                padding: 0.75rem;
+
+                > .timestamp {
+                    color: $global-text-color-light-lighten-50;
+                }
+            }
+
+            > .image-container {
+                @include fixedHeight(12.5rem);
+                @include flex(row, stretch, flex-start);
+                background-color: $global-background-color-light-lighten-5;
+                border-bottom: 0.0625rem solid $global-background-color-light;
+                display: none;
+                overflow: auto hidden;
+                scroll-behavior: smooth;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+
+                &.-visible {
+                    display: flex;
+                }
+
+                &::-webkit-scrollbar {
+                    width: 0.5rem;
+                    height: 0.5rem;
+                }
+
+                &::-webkit-scrollbar-thumb {
+                    background: $global-background-color-light-darken-10;
+                    border-radius: 999rem;
+                }
+
+                &::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+
+                > .image-wrapper {
+                    @include fixedWidth(100%);
+                    scroll-snap-align: start;
+
+                    > .image {
+                        @include fixedWidth(100%);
+                        @include fixedHeight(100%);
+                        object-fit: cover;
+                        object-position: center;
+                    }
+                }
+            }
+
+            > .body {
+                background-color: $global-background-color-light-lighten-5;
+                border-bottom: 0.0625rem solid $global-background-color-light;
+                display: none;
+                padding: 0.75rem;
+
+                &.-visible {
+                    display: revert;
+                }
+            }
+
+            > .foot {
+                @include flex(row, center, flex-start, 0.5rem);
+                background-color: $global-background-color-light-lighten-5;
+                border-bottom: 0.0625rem solid $global-background-color-light;
+                border-bottom-left-radius: 0.5rem;
+                border-bottom-right-radius: 0.5rem;
+                padding: 0.5rem 0.75rem;
+
+                > .stat {
+                    @include flex(row, center, center, 0.25rem);
+                    color: $global-text-color-light-lighten-50;
+                    cursor: pointer;
+                    font-size: 0.75rem;
+                    user-select: none;
+
+                    &:hover {
+                        color: $global-text-color-light-lighten-30;
+                    }
+
+                    > .icon {
+                        @include fixedSize(0.9375rem);
+                        object-fit: contain;
+                        object-position: center;
+                    }
+                }
+            }
+
+            > .comment-form {
+                @include flex(column, stretch, flex-start);
+                background-color: $global-background-color-light-lighten-5;
+                border-radius: 0.5rem;
+                display: none;
+                margin-top: 0.5rem;
+                margin-left: 1rem;
+                padding: 0.75rem;
+
+                &.-visible {
+                    display: revert;
+                }
+            }
+
+            > .list {
+                @include flex(column, stretch, flex-start, 0.5rem);
+                display: none;
+                margin-top: 0.5rem;
+                margin-left: 1rem;
+
+                &.-visible {
+                    display: flex;
+                }
+
+                > .message {
+                    background-color: $global-background-color-light-lighten-5;
+                    border-radius: 0.5rem;
+                    color: $global-text-color-light-lighten-50;
+                    display: none;
+                    font-style: italic;
+                    padding: 1rem;
+                    text-align: center;
+
+                    &.-visible {
+                        display: revert;
+                    }
+                }
+
+                &.comments > .item {
+                    @include flex(column, stretch, flex-start);
+
+                    > .head {
+                        @include flex(row, center, flex-start, 0.375rem);
+                        background-color: $global-background-color-light-lighten-5;
+                        border-bottom: 0.0625rem solid $global-background-color-light;
+                        border-top-left-radius: 0.5rem;
+                        border-top-right-radius: 0.5rem;
+                        font-size: 0.75rem;
+                        padding: 0.5rem 0.75rem;
+
+                        > .timestamp {
+                            color: $global-text-color-light-lighten-50;
+                        }
+
+                        > .action {
+                            display: none;
+
+                            &.-visible {
+                                display: revert;
+                            }
+                        }
+                    }
+
+                    > .body {
+                        background-color: $global-background-color-light-lighten-5;
+                        border-bottom-left-radius: 0.5rem;
+                        border-bottom-right-radius: 0.5rem;
+                        cursor: pointer;
+                        display: none;
+                        padding: 0.75rem;
+
+                        &.-visible {
+                            display: revert;
+                        }
+
+                        &.content {
+                            line-height: 1.375;
+                        }
+                    }
+
+                    > .reply-form {
+                        @include flex(column, stretch, flex-start);
+                        background-color: $global-background-color-light-lighten-5;
+                        border-radius: 0.5rem;
+                        display: none;
+                        margin-top: 0.5rem;
+                        margin-left: 1rem;
+                        padding: 0.75rem;
+
+                        &.-visible {
+                            display: flex;
+                        }
+                    }
+                }
+
+                &.attachments > .item {
+                    @include flex(row, center, flex-start, 0.375rem);
+                    background-color: $global-background-color-light-lighten-5;
+                    border-radius: 0.5rem;
+                    padding: 0.75rem;
+
+                    > .size {
+                        color: $global-text-color-light-lighten-50;
+
+                        &::before {
+                            content: '(';
+                        }
+
+                        &::after {
+                            content: ')';
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

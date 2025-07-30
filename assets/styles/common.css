@@ -666,8 +666,12 @@ html {
 
 a:link,
 a:visited {
-  color: inherit;
+  color: #3498db;
   text-decoration: none;
+}
+a:link:hover,
+a:visited:hover {
+  text-decoration: underline;
 }
 .ck a:link,
 .ck a:visited {
