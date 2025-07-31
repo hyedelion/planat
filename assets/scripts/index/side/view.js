@@ -801,70 +801,70 @@ class ScheduleViewHandler {
                                 </label>
                             </form>` : ''}
                         </li>`, 'text/html').querySelector('[data-hy-reference="item"]');
+                    const $contentBody = $item.querySelector('[data-hy-reference="contentBody"]');
+                    const $replyForm = $item.querySelector('[data-hy-reference="replyForm"]');
+                    $contentBody.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if ($replyForm.isVisible()) {
+                            $replyForm.hide();
+                        } else {
+                            const contentLabel = new HyLabel({$element: $replyForm.querySelector('[data-hy-reference="contentLabel"]')});
+                            $replyForm.show();
+                            contentLabel.setInvalid(false);
+                            contentLabel.$field.value = '';
+                            contentLabel.$field.focus();
+                        }
+                    });
+                    $replyForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        const contentLabel = new HyLabel({$element: $replyForm.querySelector('[data-hy-reference="contentLabel"]')});
+                        contentLabel.setInvalid(false);
+                        if (contentLabel.$field.value === '') {
+                            contentLabel.setInvalid(true).$message.innerText = '답글 내용을 입력해 주세요.';
+                        }
+                        if (contentLabel.isInvalid()) {
+                            return;
+                        }
+                        loading.show();
+                        const xhr = new XMLHttpRequest();
+                        const formData = new FormData();
+                        formData.append('articleId', article.id);
+                        formData.append('content', contentLabel.$field.value);
+                        formData.append('commentId', $replyForm['commentId'].value);
+                        xhr.onreadystatechange = () => {
+                            if (xhr.readyState !== XMLHttpRequest.DONE) {
+                                return;
+                            }
+                            loading.hide();
+                            if (xhr.status < 200 || xhr.status >= 300) {
+                                dialog.showSimpleOk('오류', '요청을 처리하는 도중 오류가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
+                                return;
+                            }
+                            const response = JSON.parse(xhr.responseText);
+                            switch (response.result) {
+                                case 'failure':
+                                    dialog.showSimpleOk('경고', '알 수 없는 이유로 답글을 작성하지 못하였습니다. 잠시 후 다시 시도해 주세요.');
+                                    break;
+                                case 'failure_session_expired':
+                                    dialog.showSimpleOk('경고', '세션이 만료되었거나 답글을 작성할 권한이 없습니다.');
+                                    break;
+                                case 'success':
+                                    article.comments = null;
+                                    this.#drawArticleCommentList(article, $commentList);
+                                    break;
+                                default:
+                                    dialog.showSimpleOk('경고', '서버가 알 수 없는 응답을 반환하였습니다. 잠시 후 다시 시도해 주세요.');
+                            }
+                        };
+                        xhr.open('POST', `${origin}/comment/`);
+                        xhr.send(formData);
+                    });
                     if (comment.mine === true) {
-                        const $contentBody = $item.querySelector('[data-hy-reference="contentBody"]');
-                        const $replyForm = $item.querySelector('[data-hy-reference="replyForm"]');
                         const $modifyBody = $item.querySelector('[data-hy-reference="modifyBody"]');
                         const $modify = $item.querySelector('[data-hy-reference="modify"]');
                         const $modifyCancel = $item.querySelector('[data-hy-reference="modifyCancel"]');
                         const $modifyApply = $item.querySelector('[data-hy-reference="modifyApply"]');
                         const $delete = $item.querySelector('[data-hy-reference="delete"]');
-                        $contentBody.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            if ($replyForm.isVisible()) {
-                                $replyForm.hide();
-                            } else {
-                                const contentLabel = new HyLabel({$element: $replyForm.querySelector('[data-hy-reference="contentLabel"]')});
-                                $replyForm.show();
-                                contentLabel.setInvalid(false);
-                                contentLabel.$field.value = '';
-                                contentLabel.$field.focus();
-                            }
-                        });
-                        $replyForm.addEventListener('submit', (e) => {
-                            e.preventDefault();
-                            const contentLabel = new HyLabel({$element: $replyForm.querySelector('[data-hy-reference="contentLabel"]')});
-                            contentLabel.setInvalid(false);
-                            if (contentLabel.$field.value === '') {
-                                contentLabel.setInvalid(true).$message.innerText = '답글 내용을 입력해 주세요.';
-                            }
-                            if (contentLabel.isInvalid()) {
-                                return;
-                            }
-                            loading.show();
-                            const xhr = new XMLHttpRequest();
-                            const formData = new FormData();
-                            formData.append('articleId', article.id);
-                            formData.append('content', contentLabel.$field.value);
-                            formData.append('commentId', $replyForm['commentId'].value);
-                            xhr.onreadystatechange = () => {
-                                if (xhr.readyState !== XMLHttpRequest.DONE) {
-                                    return;
-                                }
-                                loading.hide();
-                                if (xhr.status < 200 || xhr.status >= 300) {
-                                    dialog.showSimpleOk('오류', '요청을 처리하는 도중 오류가 발생하였습니다. 잠시 후 다시 시도해 주세요.');
-                                    return;
-                                }
-                                const response = JSON.parse(xhr.responseText);
-                                switch (response.result) {
-                                    case 'failure':
-                                        dialog.showSimpleOk('경고', '알 수 없는 이유로 답글을 작성하지 못하였습니다. 잠시 후 다시 시도해 주세요.');
-                                        break;
-                                    case 'failure_session_expired':
-                                        dialog.showSimpleOk('경고', '세션이 만료되었거나 답글을 작성할 권한이 없습니다.');
-                                        break;
-                                    case 'success':
-                                        article.comments = null;
-                                        this.#drawArticleCommentList(article, $commentList);
-                                        break;
-                                    default:
-                                        dialog.showSimpleOk('경고', '서버가 알 수 없는 응답을 반환하였습니다. 잠시 후 다시 시도해 주세요.');
-                                }
-                            };
-                            xhr.open('POST', `${origin}/comment/`);
-                            xhr.send(formData);
-                        });
                         $modify.addEventListener('click', (e) => {
                             e.preventDefault();
                             $contentBody.hide();
