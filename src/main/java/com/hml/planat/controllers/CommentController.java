@@ -62,10 +62,10 @@ public class CommentController {
     // 댓글 삭제
     @RequestMapping(value = "/", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public String deleteComment(@SessionAttribute(value = "signedUSer", required = false) UserEntity signedUser,
-                                CommentEntity comment) {
+    public String deleteComment(@SessionAttribute(value = "signedUser", required = false) UserEntity signedUser,
+                                @RequestParam(value = "id", required = false) int id) {
         JSONObject response = new JSONObject();
-        Result result = this.commentService.deleteComment(signedUser, comment);
+        Result result = this.commentService.deleteComment(signedUser, id);
         response.put("result", result.toStringLower());
         return response.toString();
     }

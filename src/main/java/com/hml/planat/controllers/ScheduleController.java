@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 
 @Controller
 @RequestMapping(value = "/schedule")
+@CrossOrigin(origins = "*")
 public class ScheduleController {
     private final ScheduleService scheduleService;
 

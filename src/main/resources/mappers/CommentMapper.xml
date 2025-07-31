@@ -7,17 +7,16 @@
     keyProperty="id">
         INSERT INTO `planat`.`comments` (`article_id`, `comment_id`, `user_email`, `content`, `created_at`, `update_at`)
         VALUES (#{comment.articleId}, #{comment.commentId}, #{comment.userEmail}, #{comment.content}, #{comment.createdAt}, #{comment.updatedAt})
-        LIMIT1
     </insert>
     <update id="updateComment">
         UPDATE `planat`.`comments`
-        SET `id`         = #{id},
-            `article_id` = #{articleId},
-            `comment_id` = #{commentId},
-            `user_email` = #{userEmail},
-            `content`    = #{content},
-            `created_at` = #{createdAt},
-            `update_at`  = #{updateAt}
+        SET `article_id` = #{comment.articleId},
+            `comment_id` = #{comment.commentId},
+            `user_email` = #{comment.userEmail},
+            `content`    = #{comment.content},
+            `created_at` = #{comment.createdAt},
+            `update_at`  = #{comment.updatedAt}
+        WHERE `id`         = #{comment.id}
         LIMIT 1
 
     </update>
@@ -34,7 +33,7 @@
                `T0`.`user_email` AS `userEmail`,
                `T0`.`content`    AS `content`,
                `T0`.`created_at` AS `createdAt`,
-               `T0`.`update_at`  AS `updateAt`,
+               `T0`.`update_at`  AS `updatedAt`,
                `T1`.`nickname`   AS `userNickname`
         FROM `planat`.`comments` AS `T0`
                  LEFT JOIN `planat`.`users` AS `T1` ON `T1`.`email` = `T0`.`user_email`
@@ -47,7 +46,7 @@
                `user_email` AS `userEmail`,
                `content`    AS `content`,
                `created_at` AS `createdAt`,
-               `update_at`  AS `updateAt`
+               `update_at`  AS `updatedAt`
         FROM `planat`.`comments`
         WHERE `id` = #{id}
         LIMIT 1

@@ -9,11 +9,11 @@ import org.apache.ibatis.annotations.Param;
 public interface CommentMapper {
     CommentVo[] selectAll(@Param(value = "articleId") int articleId);
 
-    int insertComment(CommentEntity comment);
+    int insertComment(@Param(value = "comment") CommentEntity comment);
 
-    int updateComment(CommentEntity comment);
+    int updateComment(@Param(value = "comment")CommentEntity comment);
 
-    int deleteCommentById(CommentEntity comment);
+    int deleteCommentById(@Param(value = "id") int id);
 
-    CommentEntity selectCommentById(int id);
+    CommentEntity selectCommentById(@Param(value = "id") int id);
 }

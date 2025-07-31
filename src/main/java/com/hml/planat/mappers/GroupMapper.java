@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface GroupMapper {
-    GroupEntity[] selectAllByUserEmail(String userEmail);
+    GroupEntity[] selectAllByUserEmail(@Param(value = "userEmail") String userEmail);
 
     int insert(@Param(value = "group") GroupEntity group);
 

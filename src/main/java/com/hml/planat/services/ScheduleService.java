@@ -11,6 +11,7 @@ import com.hml.planat.results.CommonResult;
 import com.hml.planat.results.Result;
 import com.hml.planat.results.ResultTuple;
 import com.hml.planat.vos.ArticleVo;
+import com.hml.planat.vos.CommentVo;
 import com.hml.planat.vos.GroupUserVo;
 import com.hml.planat.vos.ScheduleVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,9 +114,13 @@ public class ScheduleService {
         ArticleVo[] articleVos = this.articleMapper.selectAll(schedule.getId());
         for (int i = 0; i < articleVos.length; i++) {
             ArticleVo articleVo = articleVos[i];
+            CommentVo[] comments = this.commentMapper.selectAll(articleVo.getId());
+            for (CommentVo comment : comments) {
+                comment.setMine(comment.getUserEmail().equals(signedUser.getEmail()));
+            }
             articleVo.setMine(articleVo.getUserEmail().equals(signedUser.getEmail()));
             articleVo.setAttachments(this.attachmentMapper.selectAllByArticleId(articleVo.getId()));
-            articleVo.setComments(this.commentMapper.selectAll(articleVo.getId()));
+            articleVo.setComments(comments);
         }
         schedule.setArticles(articleVos);
 
@@ -134,20 +139,23 @@ public class ScheduleService {
         if (dbSchedule == null) {
             return CommonResult.FAILURE;
         }
-        GroupUserMappingEntity[] groupUserMappings = this.groupUserMappingMapper.selectByGroupId(dbSchedule.getGroupId());
-        GroupEntity group = this.groupMapper.selectById(dbSchedule.getGroupId());
-        for (GroupUserMappingEntity groupUserMapping : groupUserMappings) {
-            if (groupUserMapping.getUserEmail().equals(signedUser.getEmail())) {
-                continue;
+        if (dbSchedule.getGroupId() != null) {
+            GroupUserMappingEntity[] groupUserMappings = this.groupUserMappingMapper.selectByGroupId(dbSchedule.getGroupId());
+            GroupEntity group = this.groupMapper.selectById(dbSchedule.getGroupId());
+            for (GroupUserMappingEntity groupUserMapping : groupUserMappings) {
+                if (groupUserMapping.getUserEmail().equals(signedUser.getEmail())) {
+                    continue;
+                }
+                NotificationEntity notification = new NotificationEntity();
+                notification.setReferrerUserEmail(signedUser.getEmail());
+                notification.setTargetUserEmail(groupUserMapping.getUserEmail());
+                notification.setMessage(String.format("[%s]그룹의 [%s]일정이 삭제되었습니다.", group.getName(), dbSchedule.getTitle()));
+                notification.setCreatedAt(LocalDateTime.now());
+                notification.setRead(false);
+                this.notificationMapper.insert(notification);
             }
-            NotificationEntity notification = new NotificationEntity();
-            notification.setReferrerUserEmail(signedUser.getEmail());
-            notification.setTargetUserEmail(groupUserMapping.getUserEmail());
-            notification.setMessage(String.format("[%s]그룹의 [%s]일정이 삭제되었습니다.", group.getName(), dbSchedule.getTitle()));
-            notification.setCreatedAt(LocalDateTime.now());
-            notification.setRead(false);
-            this.notificationMapper.insert(notification);
         }
+
         return this.scheduleMapper.delete(dbSchedule) > 0
                 ? CommonResult.SUCCESS
                 : CommonResult.FAILURE;
@@ -176,6 +184,7 @@ public class ScheduleService {
             notification.setRead(false);
             this.notificationMapper.insert(notification);
         }
+        schedule.setUserEmail(signedUser.getEmail());
         return this.scheduleMapper.update(schedule) > 0
                 ? CommonResult.SUCCESS
                 : CommonResult.FAILURE;

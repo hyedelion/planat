@@ -7,15 +7,14 @@
     keyProperty="id">
         INSERT INTO `planat`.`articles` (`schedule_id`, `user_email`, `content`, `created_at`, `modified_at`)
         VALUES (#{article.scheduleId}, #{article.userEmail}, #{article.content}, #{article.createdAt}, #{article.modifiedAt})
-        LIMIT 1
     </insert>
     <update id="updateArticle">
         UPDATE `planat`.`articles`
-        SET `schedule_id` = #{scheduleId},
-            `user_email`  = #{userEmail},
-            `content`     = #{content},
-            `created_at`  = #{createdAt},
-            `modified_at` = #{modifiedAt}
+        SET `schedule_id` = #{article.scheduleId},
+            `user_email`  = #{article.userEmail},
+            `content`     = #{article.content},
+            `created_at`  = #{article.createdAt},
+            `modified_at` = #{article.modifiedAt}
         LIMIT 1
     </update>
     <delete id="deleteArticleById">

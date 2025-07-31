@@ -32,6 +32,32 @@ public class AttachmentService {
         this.scheduleMapper = scheduleMapper;
     }
 
+    // 첨부파일 모두 불러오기
+    public ResultTuple<AttachmentEntity[]> getAll(UserEntity signedUSer, Integer scheduleId, Integer articleId) {
+        if (signedUSer == null || signedUSer.isDeleted() || signedUSer.isSuspended()) {
+            return ResultTuple.<AttachmentEntity[]>builder()
+                    .result(CommonResult.FAILURE)
+                    .build();
+        }
+        if (scheduleId != null) {
+            AttachmentEntity[] dbAttachment = attachmentMapper.selectAllByScheduleId(scheduleId);
+            return ResultTuple.<AttachmentEntity[]>builder()
+                    .result(CommonResult.SUCCESS)
+                    .payload(dbAttachment)
+                    .build();
+        }
+        if (articleId != null) {
+            AttachmentEntity[] dbAttachment = attachmentMapper.selectAllByArticleId(articleId);
+            return ResultTuple.<AttachmentEntity[]>builder()
+                    .result(CommonResult.SUCCESS)
+                    .payload(dbAttachment)
+                    .build();
+        }
+        return ResultTuple.<AttachmentEntity[]>builder()
+                .result(CommonResult.FAILURE)
+                .build();
+    }
+
     public ResultTuple<Integer> upload(UserEntity signedUser, AttachmentEntity attachment) {
         // 정규화 하시고
         if (attachment.getScheduleId() != null) {
@@ -55,7 +81,8 @@ public class AttachmentService {
             }
         } else if (attachment.getArticleId() != null) {
             // 해당 게시글이 해당 유저의 소유가 맞는지 확인
-            ArticleEntity article = this.articleMapper.selectArticleByIdAndUserEmail(attachment.getId(), signedUser.getEmail());
+            ArticleEntity article = this.articleMapper.selectArticleByIdAndUserEmail(attachment.getArticleId(), signedUser.getEmail());
+            System.out.println(article);
             if (article == null) {
                 // 전달받은 articleId로 ArticleEntity를 조회했더니 그런거 없음
                 return ResultTuple.<Integer>builder()

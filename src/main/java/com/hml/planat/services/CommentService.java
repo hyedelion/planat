@@ -1,15 +1,12 @@
 package com.hml.planat.services;
 
+import com.hml.planat.entities.NotificationEntity;
 import com.hml.planat.entities.articles.ArticleEntity;
 import com.hml.planat.entities.comments.CommentEntity;
-import com.hml.planat.entities.groups.GroupEntity;
 import com.hml.planat.entities.groups.GroupUserMappingEntity;
 import com.hml.planat.entities.schedules.ScheduleEntity;
 import com.hml.planat.entities.users.UserEntity;
-import com.hml.planat.mappers.ArticleMapper;
-import com.hml.planat.mappers.CommentMapper;
-import com.hml.planat.mappers.GroupUserMappingMapper;
-import com.hml.planat.mappers.ScheduleMapper;
+import com.hml.planat.mappers.*;
 import com.hml.planat.results.CommonResult;
 import com.hml.planat.results.Result;
 import com.hml.planat.results.ResultTuple;
@@ -24,13 +21,15 @@ public class CommentService {
     private final ArticleMapper articleMapper;
     private final CommentMapper commentMapper;
     private final GroupUserMappingMapper groupUserMappingMapper;
+    private final NotificationMapper notificationMapper;
     private final ScheduleMapper scheduleMapper;
 
     @Autowired
-    public CommentService(ArticleMapper articleMapper, CommentMapper commentMapper, GroupUserMappingMapper groupUserMappingMapper, ScheduleMapper scheduleMapper) {
+    public CommentService(ArticleMapper articleMapper, CommentMapper commentMapper, GroupUserMappingMapper groupUserMappingMapper, NotificationMapper notificationMapper, ScheduleMapper scheduleMapper) {
         this.articleMapper = articleMapper;
         this.commentMapper = commentMapper;
         this.groupUserMappingMapper = groupUserMappingMapper;
+        this.notificationMapper = notificationMapper;
         this.scheduleMapper = scheduleMapper;
     }
 
@@ -63,9 +62,15 @@ public class CommentService {
                     .build();
         }
 
+        CommentVo[] comments = this.commentMapper.selectAll(articleId);
+        for (CommentVo comment : comments) {
+            if (comment.getUserEmail().equals(signedUser.getEmail())) {
+                comment.setMine(true);
+            }
+        }
         return ResultTuple.<CommentVo[]>builder()
                 .result(CommonResult.SUCCESS)
-                .payload(this.commentMapper.selectAll(articleId))
+                .payload(comments)
                 .build();
     }
 
@@ -85,7 +90,32 @@ public class CommentService {
         }
         comment.setUserEmail(signedUser.getEmail());
         comment.setCreatedAt(LocalDateTime.now());
-        comment.setUpdateAt(null);
+        comment.setUpdatedAt(null);
+
+        NotificationEntity notification = new NotificationEntity();
+        if (comment.getCommentId() == null) {
+            // 게시글 주인에게 알림 보내기
+            if (!article.getUserEmail().equals(signedUser.getEmail())) {
+                notification.setTargetUserEmail(article.getUserEmail());
+                notification.setReferrerUserEmail(signedUser.getEmail());
+                notification.setMessage(String.format("[%s] 게시글에 [%s] 님이 댓글을 등록하였습니다.", schedule.getTitle(), signedUser.getNickname()));
+                notification.setCreatedAt(LocalDateTime.now());
+                notification.setRead(false);
+                this.notificationMapper.insert(notification);
+            }
+        } else {
+            CommentEntity dbComment = this.commentMapper.selectCommentById(comment.getCommentId());
+            if (!dbComment.getUserEmail().equals(signedUser.getEmail())) {
+                notification.setTargetUserEmail(dbComment.getUserEmail());
+                notification.setReferrerUserEmail(signedUser.getEmail());
+                notification.setMessage(String.format("[%s] 게시글에 [%s] 님이 답글을 등록하였습니다.", schedule.getTitle(), signedUser.getNickname()));
+                notification.setCreatedAt(LocalDateTime.now());
+                notification.setRead(false);
+                this.notificationMapper.insert(notification);
+            }
+        }
+
+
 
         return this.commentMapper.insertComment(comment) > 0
                 ? CommonResult.SUCCESS
@@ -100,39 +130,33 @@ public class CommentService {
         if (comment == null) {
             return CommonResult.FAILURE;
         }
-        ArticleEntity article = this.articleMapper.selectArticleById(comment.getArticleId());
-        ScheduleEntity schedule = this.scheduleMapper.selectById(article.getScheduleId());
-        GroupUserMappingEntity groupUSerMapping = this.groupUserMappingMapper.selectByGroupIdAndUserEmail(schedule.getGroupId(), signedUser.getEmail());
-        if (groupUSerMapping == null) {
+        CommentEntity dbComment = this.commentMapper.selectCommentById(comment.getId());
+        if (dbComment == null) {
+            return CommonResult.FAILURE;
+        }
+        if (!dbComment.getUserEmail().equals(signedUser.getEmail())) {
             return CommonResult.FAILURE_SESSION_EXPIRED;
         }
-        comment.setContent(comment.getContent());
-        comment.setUpdateAt(LocalDateTime.now());
-
-        return this.commentMapper.updateComment(comment) > 0
+        dbComment.setContent(comment.getContent());
+        dbComment.setUpdatedAt(LocalDateTime.now());
+        return this.commentMapper.updateComment(dbComment) > 0
                 ? CommonResult.SUCCESS
                 : CommonResult.FAILURE;
     }
 
     // 댓글 삭제
-    public Result deleteComment(UserEntity signedUser, CommentEntity comment) {
+    public Result deleteComment(UserEntity signedUser, int id) {
         if (signedUser == null || signedUser.isDeleted() || signedUser.isSuspended()) {
             return CommonResult.FAILURE;
         }
-        if (comment == null) {
-            return CommonResult.FAILURE;
-        }
-        ArticleEntity article = this.articleMapper.selectArticleById(comment.getArticleId());
-        ScheduleEntity schedule = this.scheduleMapper.selectById(article.getScheduleId());
-        GroupUserMappingEntity groupUserMapping = this.groupUserMappingMapper.selectByGroupIdAndUserEmail(schedule.getGroupId(), signedUser.getEmail());
-        if (groupUserMapping == null) {
-            return CommonResult.FAILURE_SESSION_EXPIRED;
-        }
-        CommentEntity dbComment = this.commentMapper.selectCommentById(comment.getId());
+        CommentEntity dbComment = this.commentMapper.selectCommentById(id);
         if (dbComment == null) {
             return CommonResult.FAILURE;
         }
-        return this.commentMapper.deleteCommentById(dbComment) > 0
+        if (!dbComment.getUserEmail().equals(signedUser.getEmail())) {
+            return CommonResult.FAILURE_SESSION_EXPIRED;
+        }
+        return this.commentMapper.deleteCommentById(id) > 0
                 ? CommonResult.SUCCESS
                 : CommonResult.FAILURE;
     }

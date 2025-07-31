@@ -1,9 +1,13 @@
 package com.hml.planat.services;
 
+import com.hml.planat.entities.NotificationEntity;
 import com.hml.planat.entities.articles.ArticleEntity;
+import com.hml.planat.entities.schedules.ScheduleEntity;
 import com.hml.planat.entities.users.UserEntity;
 import com.hml.planat.mappers.ArticleMapper;
 import com.hml.planat.mappers.AttachmentMapper;
+import com.hml.planat.mappers.NotificationMapper;
+import com.hml.planat.mappers.ScheduleMapper;
 import com.hml.planat.results.CommonResult;
 import com.hml.planat.results.Result;
 import com.hml.planat.results.ResultTuple;
@@ -17,11 +21,15 @@ import java.time.LocalDateTime;
 public class ArticleService {
     private final ArticleMapper articleMapper;
     private final AttachmentMapper attachmentMapper;
+    private final ScheduleMapper scheduleMapper;
+    private final NotificationMapper notificationMapper;
 
     @Autowired
-    public ArticleService(ArticleMapper articleMapper, AttachmentMapper attachmentMapper) {
+    public ArticleService(ArticleMapper articleMapper, AttachmentMapper attachmentMapper, ScheduleMapper scheduleMapper, NotificationMapper notificationMapper) {
         this.articleMapper = articleMapper;
         this.attachmentMapper = attachmentMapper;
+        this.scheduleMapper = scheduleMapper;
+        this.notificationMapper = notificationMapper;
     }
     // 게시물 불러오기
     public ResultTuple<ArticleVo[]> getAllArticles(UserEntity signedUser, int scheduleId) {
@@ -59,12 +67,42 @@ public class ArticleService {
     // 게시물 작성하기
     public Result writeArticle(UserEntity signedUser, ArticleEntity articleEntity) {
         if (signedUser == null || signedUser.isDeleted() || signedUser.isSuspended()) {
+            // 로그인 안돼있을 때       탈퇴됐을 때                  정지됐을 때
             return CommonResult.FAILURE;
         }
         if (articleEntity == null) {
+            // 게시글 안썼을 때
             return CommonResult.FAILURE;
         }
-        return this.articleMapper.insertArticle(articleEntity) >= 0
+        articleEntity.setUserEmail(signedUser.getEmail());
+        articleEntity.setCreatedAt(LocalDateTime.now());
+        articleEntity.setModifiedAt(null);
+        // 넘겨받은 scheduleId, content 빼고 나머지
+
+        // 스케줄 작성자에게 알림 보내기
+        ScheduleEntity schedule = this.scheduleMapper.selectById(articleEntity.getScheduleId());
+
+
+        if (schedule == null) {
+            return CommonResult.FAILURE;
+        }
+
+
+        if (!schedule.getUserEmail().equals(signedUser.getEmail())) {
+            NotificationEntity notification = new NotificationEntity();
+            notification.setTargetUserEmail(schedule.getUserEmail());
+            notification.setReferrerUserEmail(signedUser.getEmail());
+            notification.setMessage(String.format("[%s]님이 [%s] 일정에 게시글을 작성하였습니다.", signedUser.getNickname(), schedule.getTitle()));
+            notification.setCreatedAt(LocalDateTime.now());
+            notification.setRead(false);
+
+            this.notificationMapper.insert(notification);
+
+        }
+
+
+        return this.articleMapper.insertArticle(articleEntity) > 0
+                // 게시글이 있으면
                 ? CommonResult.SUCCESS
                 : CommonResult.FAILURE;
     }

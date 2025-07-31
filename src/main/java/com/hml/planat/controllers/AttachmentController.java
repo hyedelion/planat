@@ -31,6 +31,18 @@ public class AttachmentController {
         this.attachmentMapper = attachmentMapper;
     }
 
+    // 첨부파일 불러오기
+    @RequestMapping(value = "/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public AttachmentEntity[] getAllAttachments(@SessionAttribute(value = "signedUser", required = false) UserEntity signedUser,
+                                                @RequestParam(value = "scheduleId", required = false) Integer scheduleId,
+                                                @RequestParam(value = "articleId", required = false) Integer articleId) {
+        JSONObject response = new JSONObject();
+        ResultTuple<AttachmentEntity[]> result = this.attachmentService.getAll(signedUser, scheduleId, articleId);
+        response.put("result", result.getPayload());
+        return result.getPayload();
+    }
+
     // 첨부파일 첨부하기
     @RequestMapping(value = "/", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody

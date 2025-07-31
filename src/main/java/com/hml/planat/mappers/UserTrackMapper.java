@@ -8,5 +8,5 @@ import org.apache.ibatis.annotations.Param;
 public interface UserTrackMapper {
     int insert(@Param(value = "userTrack") UserTrackEntity userTrack);
 
-    UserTrackEntity selectByUserEmail(@Param("userEmail") String userEmail);
+    UserTrackEntity selectByUserEmail(@Param(value = "userEmail") String userEmail);
 }

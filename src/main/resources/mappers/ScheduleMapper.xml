@@ -14,15 +14,15 @@
     </insert>
     <update id="update">
         UPDATE `planat`.`schedules`
-        SET `user_email`        = #{userEmail},
-            `group_id`          = #{groupId},
-            `title`             = #{title},
-            `start_at`          = #{startAt},
-            `end_at`            = #{endAt},
-            `address_primary`   = #{addressPrimary},
-            `address_secondary` = #{addressSocondary},
-            `latitude`          = #{latitude},
-            `longitude`         = #{longitude}
+        SET `user_email`        = #{schedule.userEmail},
+            `group_id`          = #{schedule.groupId},
+            `title`             = #{schedule.title},
+            `start_at`          = #{schedule.startAt},
+            `end_at`            = #{schedule.endAt},
+            `address_primary`   = #{schedule.addressPrimary},
+            `address_secondary` = #{schedule.addressSecondary},
+            `latitude`          = #{schedule.latitude},
+            `longitude`         = #{schedule.longitude}
         WHERE `id` = #{schedule.id}
         LIMIT 1
     </update>
