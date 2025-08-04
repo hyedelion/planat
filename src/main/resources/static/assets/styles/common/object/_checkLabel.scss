@@ -1,0 +1,67 @@
+@charset "UTF-8";
+
+@import "./../../_def";
+@import "./_def";
+
+[data-hy-object="checkLabel"] {
+    @include flex(row, center, flex-start, 0.375rem);
+    cursor: pointer;
+    user-select: none;
+
+    &:hover > [data-hy-component~="checkLabel.box"] {
+        border-color: $global-border-color-light-darken-2_5;
+    }
+
+    &:active > [data-hy-component~="checkLabel.box"] {
+        border-color: $global-border-color-light-darken-5;
+    }
+
+    &.-invalid {
+        $invalid-color: #e74c3c;
+
+        > [data-hy-component~="checkLabel.caption"] {
+            color: $invalid-color;
+        }
+
+        > [data-hy-component~="checkLabel.message"] {
+            color: $invalid-color;
+            display: block;
+        }
+    }
+
+    > [data-hy-component~="checkLabel.input"] {
+        display: none;
+    }
+
+    > [data-hy-component~="checkLabel.input"]:checked + [data-hy-component~="checkLabel.box"] {
+        background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAACXBIWXMAAAsTAAALEwEAmpwYAAABRUlEQVR4nO3UvUrEQBSG4WglCv6BeiUWgjaKjYiVF+AFeAuCndgIaqeddnoRNlaWIoIiCIKgCLthk/ebQnePRKIswyxk11mw8INpksM8M5PJSZL//IU45zYkHTQajam+IZLmgA9JJuk1z/PV6IiZDQN3JfI1AGdmg1EhSfvtSDnOYiPzQNND3rIsm4mGmNkI8ODvBlhPYkbSUQA5jYo455aBlgc9p2k6GQ2p1WpjwJO/mzzPVypPkqbpBLBT/BedaoCTwC07rozU6/VxSVflWeOcWwoga4Hv8mhmo5Uh4MKboMAWv98XrUXSi1fTaq+pCl0GVvuDSToPHNlh0m2yLJuWdBPCJO0Fnt8X7SfpJeXxXAdW7iNNSQs9Id1gwO6vkCoYcGtmQ1GgThjwDswmseNfEGA7OtLeciRtAZtmNtA36D9JIJ+/JU/urZNSlAAAAABJRU5ErkJggg==");
+        background-color: $global-concept-color-main;
+        border-color: $global-concept-color-main;
+    }
+
+    > [data-hy-component~="checkLabel.box"] {
+        @include fixedSize(0.9375rem);
+        background-color: $global-background-color-light-lighten-5;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: 85%;
+        border: 0.0625rem solid $global-border-color-light;
+        border-radius: 0.25rem;
+        flex-grow: 0;
+        flex-shrink: 0;
+        transition-duration: 175ms;
+        transition-property: border-color;
+        transition-timing-function: ease;
+    }
+
+    > [data-hy-component~="checkLabel.caption"] {
+        flex-grow: 1;
+        flex-shrink: 1;
+    }
+
+    > [data-hy-component~="checkLabel.message"] {
+        display: none;
+        font-size: 0.75rem;
+        grid-column-start: 2;
+    }
+}

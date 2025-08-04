@@ -1,0 +1,245 @@
+@charset "UTF-8";
+
+@import "./../_def";
+
+#main {
+    @include flex(column, stretch, flex-start);
+    background-color: $global-background-color-light-lighten-5;
+    flex-grow: 1;
+    flex-shrink: 1;
+    order: 2;
+}
+
+#main > .calendar-header {
+    @include flex(row, center, flex-start, 1rem);
+    padding: 0.75rem;
+
+    > .nav-form {
+        @include flex(row, center, flex-start);
+        line-height: 0;
+
+        > .control-container {
+            @include flex(row, stretch, flex-start);
+            border: 0.0625rem solid $global-border-color-light;
+            border-radius: 0.5rem;
+            overflow: hidden;
+
+            > .button {
+                @include fixedHeight(1.75rem);
+                @include flex(row, center, center);
+                //background-color: $global-background-color-light-darken-5;
+                cursor: pointer;
+                line-height: 0;
+                opacity: 0.6;
+                padding: 0 0.625rem;
+                transition-duration: 175ms;
+                transition-property: opacity;
+                transition-timing-function: ease;
+
+                + .button {
+                    border-left: 0.0625rem solid $global-border-color-light;
+                }
+
+                &:hover {
+                    opacity: 0.8;
+                }
+
+                &:active {
+                    opacity: 1;
+                }
+
+                > .icon {
+                    @include fixedHeight(50%);
+                }
+            }
+        }
+
+        > .date {
+            @include flex(row, center, center);
+            font-size: 1.125rem;
+            margin-left: 0.75rem;
+        }
+    }
+}
+
+#main > .calendar {
+    flex-grow: 1;
+    flex-shrink: 1;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: min-content 1fr;
+
+    > .day-container {
+        border-top: 0.0625rem solid $global-border-color-light;
+        border-bottom: 0.0625rem solid $global-border-color-light;
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        grid-template-rows: 1fr;
+
+        > .day {
+            padding: 0.375rem;
+            text-align: center;
+
+            &:first-child {
+                color: #e74c3c;
+            }
+
+            &:last-child {
+                color: #3498db;
+            }
+
+            &:not(:last-child) {
+                border-right: 0.0625rem solid $global-border-color-light;
+            }
+        }
+    }
+
+    > .cell-container {
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(auto-fit, minmax(0, 1fr));
+
+        > .week {
+            display: none;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            grid-template-rows: 100%;
+            overflow: hidden;
+            position: relative;
+
+            &.-visible {
+                display: grid;
+            }
+
+            &:not(:last-child) {
+                border-bottom: 0.0625rem solid $global-border-color-light;
+            }
+
+            > .day {
+                @include flex(column, stretch, flex-start);
+                cursor: pointer;
+                position: relative;
+
+                &:hover {
+                    background-color: $global-background-color-light;
+
+                    > .more-button {
+                        opacity: 0.875;
+                    }
+                }
+
+                &.-overflown > .more-button {
+                    display: flex;
+                    pointer-events: auto;
+                    z-index: 1;
+                }
+
+                &:first-child {
+                    color: #e74c3c;
+                }
+
+                &:last-child {
+                    color: #3498db;
+                }
+
+                &:not(:last-child) {
+                    border-right: 0.0625rem solid $global-border-color-light;
+                }
+
+                &.next-month,
+                &.previous-month {
+                    background-color: unset;
+                    cursor: default;
+
+                    > .head > .date {
+                        color: $global-text-color-light-lighten-75;
+                        font-style: italic;
+                    }
+                }
+
+                > .more-button {
+                    @include fixedSize(1.5rem);
+                    @include flex(row, center, center);
+                    right: 0.5rem;
+                    bottom: 0.5rem;
+                    background-color: #e0e0e0;
+                    border-radius: 999rem;
+                    cursor: pointer;
+                    display: none;
+                    opacity: 0.5;
+                    pointer-events: none;
+                    position: absolute;
+                    transition-duration: 175ms;
+                    transition-property: opacity;
+                    transition-timing-function: ease;
+
+                    > .icon {
+                        @include fixedSize(75%);
+                    }
+                }
+
+                > .head {
+                    @include flex(row, center, flex-start, 0.25rem);
+                    padding: 0.25rem;
+
+                    > .date {
+                        flex-grow: 1;
+                        flex-shrink: 1;
+                        font-size: 0.75rem;
+                        font-weight: 400;
+                    }
+
+                    > .count {
+                        @include fixedSize(1.125rem);
+                        @include flex(row, center, center);
+                        background-color: $global-background-color-light-darken-5;
+                        border-radius: 999rem;
+                        color: $global-text-color-light-lighten-40;
+                        display: none;
+                        font-size: 0.65rem;
+                        line-height: 0;
+
+                        &.-visible {
+                            display: flex;
+                        }
+                    }
+                }
+
+                > .schedule-container {
+                    @include flex(column, stretch, flex-start, 0.125rem);
+
+                    > .gap,
+                    > .schedule {
+                        @include fixedHeight(1.125rem);
+                        font-size: 0;
+                    }
+
+                    > .schedule {
+                        @include flex(row, center, flex-start, 0.25rem);
+                        cursor: pointer;
+                        display: none;
+                        font-size: 0.7rem;
+                        margin-left: -0.0625rem;
+                        padding: 0 0.425rem;
+
+                        &.-visible {
+                            display: flex;
+                        }
+
+                        &.starter {
+                            border-top-left-radius: 0.25rem;
+                            border-bottom-left-radius: 0.25rem;
+                            margin-left: 0.25rem;
+                        }
+
+                        &.ender {
+                            border-top-right-radius: 0.25rem;
+                            border-bottom-right-radius: 0.25rem;
+                            margin-right: 0.25rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

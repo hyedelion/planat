@@ -1,0 +1,18 @@
+@charset "UTF-8";
+
+@import "./../_def";
+@import "./login/intro-container";
+@import "./login/main";
+@import url('https://fonts.googleapis.com/css2?family=Inria+Serif:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+
+body {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: 1fr;
+}
+
+@media screen and (max-width: 55rem) {
+    body {
+        grid-template-columns: 1fr;
+    }
+}
