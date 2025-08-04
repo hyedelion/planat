@@ -267,11 +267,17 @@
         @include fixedSize(2.75rem);
         border: 0.125rem solid $global-concept-color-viola;
         border-radius: 999rem;
+        display: block;
         overflow: hidden;
         padding: 0.0625rem;
+        position: relative;
 
         > .image {
-            @include fixedSize(100%);
+            @include fixedSize(calc(100% + 0.25rem));
+            top: 50%;
+            left: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
         }
     }
 

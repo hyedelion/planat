@@ -31,6 +31,7 @@ window.sideHandler = new SideHandler({
     $element: document.getElementById('side')
 });
 
+import ('./side/default.js');
 import ('./side/add.js');
 import ('./side/modify.js');
 import ('./side/view.js');

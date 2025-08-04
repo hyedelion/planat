@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
@@ -8,8 +8,10 @@
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" type="text/javascript"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDHTSknCXHZjIfw8wPJyfB7cQj86x2FlAU&libraries=marker,places" type="text/javascript"></script>
     <script src="./assets/scripts/common.js" type="text/javascript"></script>
+    <script src="./assets/libraries/perfect-scrollbar/perfect-scrollbar.min.js" type="text/javascript"></script>
     <script defer src="./assets/scripts/index.js" type="module"></script>
     <link href="./assets/libraries/ckeditor5/ckeditor5.css" rel="stylesheet">
+    <link href="./assets/libraries/perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet">
     <link href="./assets/styles/common.css" rel="stylesheet" type="text/css">
     <link href="./assets/styles/index.css" rel="stylesheet" type="text/css">
 </head>
@@ -197,12 +199,12 @@
 <aside id="aside">
     <span class="logo">PLAN:AT</span>
     <div class="user">
-        <div class="image-wrapper">
-            <img alt="" class="image" draggable="false" src="https://wallpapers.com/images/hd/cartoon-developer-profile-picture-j23xefhmfofeiayv.png">
-        </div>
+        <a class="image-wrapper" target="_blank" th:href="@{/user/email (email = ${session.signedUser.getEmail()})}">
+            <img alt="" class="image" draggable="false" th:src="@{/user/email (email = ${session.signedUser.getEmail()})}">
+        </a>
         <div class="text-container">
-            <span class="name">HEYMIN LEE</span>
-            <span class="email">someemail@sample.com</span>
+            <span class="name" th:text="${session.signedUser.getNickname()}"></span>
+            <span class="email" th:text="${session.signedUser.getEmail()}"></span>
         </div>
     </div>
     <ul class="user-menu">
@@ -309,6 +311,128 @@
                 </button>
             </li>
         </ul>
+    </div>
+    <div class="body default -visible" data-hy-reference="body" data-hy-name="default">
+        <div class="current-weather" data-hy-reference="currentWeather">
+            <img alt="-" class="icon" src="./assets/images/index/side/default/current-weather/rain.svg" data-hy-reference="currentIcon">
+            <span class="temperature" data-hy-reference="currentTemperature">-</span>
+            <span class="temperature-range">
+                <span class="value min" data-hy-reference="currentTemperatureMin">-</span>
+                <span class="bar">
+                    <span class="current" data-hy-reference="currentTemperatureBar"></span>
+                </span>
+                <span class="value max" data-hy-reference="currentTemperatureMax">-</span>
+            </span>
+            <span class="caption" data-hy-reference="currentCaption">-</span>
+            <span class="etc">
+                <span class="item wind">
+                    <img alt="" class="icon" src="./assets/images/index/side/default/current-weather.etc.wind.png">
+                    <span class="value" data-hy-reference="currentWind">-</span>
+                </span>
+                <span class="item humidity">
+                    <img alt="" class="icon" src="./assets/images/index/side/default/current-weather.etc.humidity.png">
+                    <span class="value" data-hy-reference="currentHumidity">-</span>
+                </span>
+            </span>
+        </div>
+        <div class="today-weather" data-hy-reference="todayWeather">
+            <div class="item" data-hy-reference="item">
+                <span class="time">지금</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/partly-cloudy-day.svg">
+                <span class="temperature">30</span>
+            </div>
+            <div class="item" data-hy-reference="item">
+                <span class="time">13시</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/partly-cloudy-day.svg">
+                <span class="temperature">33</span>
+            </div>
+            <div class="item" data-hy-reference="item">
+                <span class="time">14시</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/partly-cloudy-day.svg">
+                <span class="temperature">35</span>
+            </div>
+            <div class="item" data-hy-reference="item">
+                <span class="time">15시</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/cloudy.svg">
+                <span class="temperature">36</span>
+            </div>
+            <div class="item" data-hy-reference="item">
+                <span class="time">16시</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/cloudy.svg">
+                <span class="temperature">35</span>
+            </div>
+            <div class="item" data-hy-reference="item">
+                <span class="time">17시</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/cloudy.svg">
+                <span class="temperature">33</span>
+            </div>
+            <div class="item" data-hy-reference="item">
+                <span class="time">18시</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/cloudy.svg">
+                <span class="temperature">31</span>
+            </div>
+            <div class="item" data-hy-reference="item">
+                <span class="time">19시</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/cloudy.svg">
+                <span class="temperature">30</span>
+            </div>
+            <div class="item" data-hy-reference="item">
+                <span class="time">20시</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/cloudy.svg">
+                <span class="temperature">29</span>
+            </div>
+        </div>
+        <div class="daily-weather" data-hy-reference="dailyWeather">
+            <div class="item" data-hy-reference="item">
+                <span class="date">오늘</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/cloudy.svg">
+                <span class="-flex-stretch" role="none"></span>
+                <span class="temperature min">28</span>
+                <span class="temperature max">33</span>
+            </div>
+            <div class="item" data-hy-reference="item">
+                <span class="date">화</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/cloudy.svg">
+                <span class="-flex-stretch" role="none"></span>
+                <span class="temperature min">30</span>
+                <span class="temperature max">35</span>
+            </div>
+            <div class="item" data-hy-reference="item">
+                <span class="date">수</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/partly-cloudy-day.svg">
+                <span class="-flex-stretch" role="none"></span>
+                <span class="temperature min">29</span>
+                <span class="temperature max">34</span>
+            </div>
+            <div class="item" data-hy-reference="item">
+                <span class="date">목</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/rain.svg">
+                <span class="-flex-stretch" role="none"></span>
+                <span class="temperature min">26</span>
+                <span class="temperature max">31</span>
+            </div>
+            <div class="item" data-hy-reference="item">
+                <span class="date">금</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/thunderstorms-day-rain.svg">
+                <span class="-flex-stretch" role="none"></span>
+                <span class="temperature min">26</span>
+                <span class="temperature max">30</span>
+            </div>
+            <div class="item" data-hy-reference="item">
+                <span class="date">토</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/rain.svg">
+                <span class="-flex-stretch" role="none"></span>
+                <span class="temperature min">27</span>
+                <span class="temperature max">30</span>
+            </div>
+            <div class="item" data-hy-reference="item">
+                <span class="date">일</span>
+                <img alt="" class="icon" src="./assets/images/index/side/default/current-weather/cloudy.svg">
+                <span class="-flex-stretch" role="none"></span>
+                <span class="temperature min">26</span>
+                <span class="temperature max">31</span>
+            </div>
+        </div>
     </div>
     <form novalidate class="body add" data-hy-reference="body" data-hy-name="add">
         <label data-hy-object="label" data-hy-name="group">

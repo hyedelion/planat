@@ -30,8 +30,10 @@ class ScheduleAddHandler {
             if (!this.$element.isVisible()) {
                 return;
             }
-            sideHandler.hideAllActions();
             this.$element.hide();
+            sideHandler.hideAllActions();
+            sideHandler.hideAllBodies();
+            sideHandler.$bodyMap['default'].show();
         });
     }
 

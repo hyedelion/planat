@@ -174,7 +174,8 @@ class ScheduleViewHandler {
                 return;
             }
             sideHandler.hideAllActions();
-            this.$element.hide();
+            sideHandler.hideAllBodies();
+            sideHandler.$bodyMap['default'].show();
         });
     }
 
@@ -780,13 +781,6 @@ class ScheduleViewHandler {
                                 <a class="action delete -visible" href="#" data-hy-reference="delete">삭제</a>` : ''}
                             </div>                                
                             <div class="body content -visible" data-hy-reference="contentBody">${comment.content}</div>
-                            ${comment.mine === true ? `
-                            <div class="body modify" data-hy-reference="modifyBody">
-                                <label data-hy-object="label" data-hy-name="value" data-hy-reference="contentLabel">
-                                    <input autocomplete="email" class="-flex-stretch" maxlength="500" minlength="1" name="content" placeholder="수정할 내용을 입력해 주세요." type="text" value="${comment.content}" data-hy-object="field" data-hy-component="label.field">
-                                    <span data-hy-component="label.message">수정할 내용을 입력해 주세요.</span>
-                                </label>
-                            </div>
                             <form novalidate class="reply-form" data-hy-reference="replyForm">
                                 <input hidden name="commentId" type="hidden" value="${comment.id}">
                                 <label data-hy-object="label" data-hy-name="value" data-hy-reference="contentLabel">
@@ -799,7 +793,14 @@ class ScheduleViewHandler {
                                     </span>
                                     <span data-hy-component="label.message">답글을 입력해 주세요.</span>
                                 </label>
-                            </form>` : ''}
+                            </form>
+                            ${comment.mine === true ? `
+                            <div class="body modify" data-hy-reference="modifyBody">
+                                <label data-hy-object="label" data-hy-name="value" data-hy-reference="contentLabel">
+                                    <input autocomplete="email" class="-flex-stretch" maxlength="500" minlength="1" name="content" placeholder="수정할 내용을 입력해 주세요." type="text" value="${comment.content}" data-hy-object="field" data-hy-component="label.field">
+                                    <span data-hy-component="label.message">수정할 내용을 입력해 주세요.</span>
+                                </label>
+                            </div>` : ''}
                         </li>`, 'text/html').querySelector('[data-hy-reference="item"]');
                     const $contentBody = $item.querySelector('[data-hy-reference="contentBody"]');
                     const $replyForm = $item.querySelector('[data-hy-reference="replyForm"]');
