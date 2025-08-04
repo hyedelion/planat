@@ -1,6 +1,7 @@
 package com.hml.planat.controllers;
 
 
+import com.hml.planat.entities.attachments.AttachmentEntity;
 import com.hml.planat.entities.users.*;
 import com.hml.planat.results.CommonResult;
 import com.hml.planat.results.Result;
@@ -12,7 +13,9 @@ import jakarta.servlet.http.HttpSession;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +38,13 @@ public class UserController {
         this.emailTokenService = emailTokenService;
         this.contactMvnoService = contactMvnoService;
         this.loginAttemptService = loginAttemptService;
+    }
+
+    @RequestMapping(value = "/", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public String patchData(@SessionAttribute(value = "signedUser", required = false) UserEntity signedUser,
+                            UserEntity newData) {
+        return null;
     }
 
     @RequestMapping(value = "/login", method = RequestMethod.GET, produces = MediaType.TEXT_HTML_VALUE)
@@ -141,5 +151,20 @@ public class UserController {
         return response.toString();
     }
 
-
+    @RequestMapping(value = "/image", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<byte[]> getImage(@RequestParam(value = "email", required = false) String email) {
+        UserEntity user = this.userService.getUserImageByEmail(email);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (user.getImageData() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + user.getImageName() + "\"")
+                .contentLength(user.getImageData().length)
+                .contentType(MediaType.parseMediaType(user.getImageType()))
+                .body(user.getImageData());
+    }
 }

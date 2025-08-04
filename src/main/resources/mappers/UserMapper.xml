@@ -57,6 +57,34 @@
         FROM `planat`.`users`
         WHERE `email` = #{email}
     </select>
+    <select id="selectByEmailWithImage" resultType="com.hml.planat.entities.users.UserEntity">
+        SELECT `email`             AS `email`,
+               `password`          AS `password`,
+               `nickname`          AS `nickname`,
+               `image_data`        AS `imageData`,
+               `image_type`        AS `imageType`,
+               `image_name`        AS `imageName`,
+               `name`              AS `name`,
+               `birth`             AS `birth`,
+               `gender`            AS `gender`,
+               `contact_mvno_code` AS `contactMvnoCode`,
+               `contact_first`     AS `contactFirst`,
+               `contact_second`    AS `contactSecond`,
+               `contact_third`     AS `contactThird`,
+               `address_postal`    AS `addressPostal`,
+               `address_primary`   AS `addressPrimary`,
+               `address_secondary` AS `addressSecondary`,
+               `term_service_at`   AS `termServiceAt`,
+               `term_privacy_at`   AS `termPrivacyAt`,
+               `term_marketing_at` AS `termMarketingAt`,
+               `is_admin`          AS `isAdmin`,
+               `is_deleted`        AS `isDeleted`,
+               `is_suspended`      AS `isSuspended`,
+               `created_at`        AS `createdAt`,
+               `updated_at`        AS `updatedAt`
+        FROM `planat`.`users`
+        WHERE `email` = #{email}
+    </select>
     <select id="selectCountByEmail" resultType="java.lang.Integer">
         SELECT COUNT(0)
         FROM `planat`.`users`

@@ -15,6 +15,9 @@ public class UserEntity {
     private String email;
     private String password;
     private String nickname;
+    private byte[] imageData;
+    private String imageType;
+    private String imageName;
     private String name;
     private LocalDate birth;
     private String gender;

@@ -70,6 +70,7 @@ public class ContactTokenController {
             case "register" -> "회원가입";
             case "recoverEmail" -> "이메일 찾기";
             case "recoverPassword" -> "비밀번호 재설정";
+            case "modify" -> "회원정보 수정";
             default -> null;
         };
         if (which == null) {

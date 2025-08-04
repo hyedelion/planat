@@ -1,28 +1,24 @@
 package com.hml.planat;
 
+import com.hml.planat.entities.weather.WeatherEntity;
+import com.hml.planat.services.WeatherService;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 @SpringBootTest
 class HyelendarApplicationTests {
-    private static void addFormField(DataOutputStream out, String boundary, String name, String value) throws IOException, IOException {
-        String lineEnd = "\r\n";
-        String twoHyphens = "--";
+    @Autowired
+    private WeatherService weatherService;
 
-        out.writeBytes(twoHyphens + boundary + lineEnd);
-        out.writeBytes("Content-Disposition: form-data; name=\"" + name + "\"" + lineEnd);
-        out.writeBytes("Content-Type: text/plain; charset=UTF-8" + lineEnd);
-        out.writeBytes(lineEnd);
-        out.writeBytes(value + lineEnd);
-    }
     @Test
     void contextLoads() throws IOException {
-
+        WeatherEntity[] weathers = this.weatherService.getHourlyByCoordinate(35.8703D, 128.5911D);
+        for (WeatherEntity weather : weathers) {
+            System.out.printf("%s: 온도는 %f도, 습도는 %d 일껄?\n", weather.getTimestamp(), weather.getTemperatureMax(), weather.getHumidity());
+        }
     }
 
 }

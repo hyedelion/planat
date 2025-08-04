@@ -34,6 +34,55 @@ public class UserService {
         this.contactTokenMapper = contactTokenMapper;
     }
 
+    // 회원정보 수정
+    public Result updateData(UserEntity signedUser, UserEntity newData, ContactTokenEntity contactToken) {
+        // 셀렉뜨 바이 이메일
+        UserEntity dbUser = userMapper.selectByEmail(signedUser.getEmail());
+        if (dbUser == null || dbUser.isDeleted() || dbUser.isSuspended()) {
+            return CommonResult.FAILURE_SESSION_EXPIRED;
+        }
+        // password 가 signedUser.getPassword 와 같으면 password 변경 X
+        if (newData.getPassword() != null) {
+            if (UserRegex.password.matches(newData.getPassword())) {
+                dbUser.setPassword(BCrypt.hashpw(newData.getPassword(), BCrypt.gensalt()));
+            }
+        }
+        // nickname 이 signedUSer.getNickname 과 같으면 nickname 변경 X
+        // nickname 변경 시 중복체크
+        if (!dbUser.getNickname().equals(newData.getNickname())) {
+            if (UserRegex.nickname.matches(newData.getNickname())) {
+                UserEntity dbUserNickname = this.userMapper.selectByNickname(dbUser.getNickname());
+                if (dbUserNickname == null) {
+                    dbUser.setNickname(newData.getNickname());
+                }
+            }
+        }
+        if (!UserRegex.contactFirst.matches(dbUser.getContactFirst()) || !UserRegex.contactSecond.matches(dbUser.getContactSecond()) || !UserRegex.contactThird.matches(dbUser.getContactThird())) {
+            if (UserRegex.contactFirst.matches(dbUser.getContactFirst()) && UserRegex.contactSecond.matches(dbUser.getContactSecond()) && UserRegex.contactThird.matches(dbUser.getContactThird())) {
+                ContactTokenEntity dbContactToken = this.contactTokenMapper.selectContactAndCodeSalt(contactToken.getContactFirst(), contactToken.getContactSecond(), contactToken.getContactThird(), contactToken.getCode(), contactToken.getSalt());
+                if (dbContactToken == null || dbContactToken.isUsed()) {
+                    return CommonResult.FAILURE;
+                }
+                dbUser.setContactFirst(dbContactToken.getContactFirst());
+                dbUser.setContactSecond(dbContactToken.getContactSecond());
+                dbUser.setContactThird(dbContactToken.getContactThird());
+            }
+        }
+        dbUser.setImageData(newData.getImageData());
+        dbUser.setImageType(newData.getImageType());
+        dbUser.setName(newData.getName());
+        dbUser.setBirth(newData.getBirth());
+        dbUser.setGender(newData.getGender());
+        dbUser.setContactMvnoCode(newData.getContactMvnoCode());
+        dbUser.setAddressPostal(newData.getAddressPostal());
+        dbUser.setAddressPrimary(newData.getAddressPrimary());
+        dbUser.setAddressSecondary(newData.getAddressSecondary());
+        dbUser.setUpdatedAt(LocalDateTime.now());
+        return this.userMapper.update(newData) > 0
+                ? CommonResult.SUCCESS
+                : CommonResult.FAILURE;
+    }
+
     public Result checkEmail(String email) {
         if (email == null || !UserRegex.email.matches(email)) {
             return CommonResult.FAILURE;
@@ -82,6 +131,10 @@ public class UserService {
 
     public UserEntity getUserByEmail(String email) {
         return this.userMapper.selectByEmail(email);
+    }
+
+    public UserEntity getUserImageByEmail(String email) {
+        return this.userMapper.selectByEmailWithImage(email);
     }
 
     public ResultTuple<UserEntity[]> getUsersByContact(String contactFirst, String contactSecond, String contactThird) {

@@ -16,6 +16,7 @@ public class DevInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        System.out.println(request.getRemoteAddr());
         HttpSession session = request.getSession();
         if (session.getAttribute("signedUser") == null) {
             String ip = request.getRemoteAddr();
