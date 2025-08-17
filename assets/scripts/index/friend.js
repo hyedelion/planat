@@ -149,9 +149,6 @@ import {showFriendAddDialog} from "./friend/add.js";
                             <span class="email">${friend['requesterUserEmail'] ?? friend['requesteeUserEmail']}</span>
                         </span>
                         <span class="action-container">
-                            <button class="button" name="chat" type="button">
-                                <img alt="X" class="icon" draggable="false" src="./assets/images/index/submenu/friend/chat.png">
-                            </button>
                             <button class="button" name="detail" type="button">
                                 <img alt="X" class="icon" draggable="false" src="./assets/images/index/submenu/friend/detail.png">
                             </button>
@@ -161,7 +158,7 @@ import {showFriendAddDialog} from "./friend/add.js";
             $list.querySelectorAll(`[data-hy-reference="item"]`).forEach(($item) => {
                 const $detail = $item.querySelector('button[name="detail"]');
                 $detail.addEventListener('click', () => {
-                    alert(`${$item.dataset['hyId']} - 상세 정보 보여주기`);
+
                 });
             });
         }
