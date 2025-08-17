@@ -149,7 +149,11 @@ class ScheduleViewHandler {
                                 break;
                             case 'success':
                                 dialog.showSimpleOk('알림', '선택한 스케줄을 삭제하였습니다.');
-                                sideHandler.$actionMap['close'].dispatchEvent(new Event('click'));
+                                sideHandler.hideAllActions();
+                                sideHandler.hideAllBodies();
+                                sideHandler.$bodyMap['default'].show();
+                                sideHandler.$title.innerText  = '날씨';
+                                drawCalendar();
                                 break;
                             default:
                                 dialog.showSimpleOk('경고', '서버가 알 수 없는 응답을 반환하였습니다. 잠시 후 다시 시도해 주세요.');

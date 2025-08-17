@@ -207,6 +207,7 @@ class ScheduleModifyHandler {
                     scheduleViewHandler.show({
                         scheduleId: this.lastSchedule.id
                     });
+                    drawCalendar();
                     break;
                 default:
                     dialog.showSimpleOk('경고', '서버가 알 수 없는 응답을 반환하였습니다. 잠시 후 다시 시도해 주세요.');

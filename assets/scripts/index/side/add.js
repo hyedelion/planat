@@ -208,6 +208,10 @@ class ScheduleAddHandler {
                     break;
                 case 'success':
                     this.$element.hide();
+                    sideHandler.hideAllActions();
+                    sideHandler.hideAllBodies();
+                    sideHandler.$bodyMap['default'].show();
+                    sideHandler.$title.innerText  = '날씨';
                     drawCalendar();
                     break;
                 default:

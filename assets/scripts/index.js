@@ -361,10 +361,6 @@ class AsideHandler {
                 return;
             }
             const groups = JSON.parse(xhr.responseText);
-            if (groups.length === 0) {
-                $empty.show();
-                return;
-            }
             const groupCheckStatuses = JSON.parse(localStorage.getItem('group_check_statuses') ?? '{}');
             const toCheck = groupCheckStatuses['0'] ?? true;
             this.$groupList.innerHTML += `
