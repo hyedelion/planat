@@ -50,7 +50,7 @@ class AsideHandler {
                     <div class="separator" role="none"></div>
                     <label data-hy-object="label" data-hy-name="currentPassword">
                         <span data-hy-component="label.caption">현재 비밀번호</span>
-                        <input autocomplete="off" class="-flex-stretch" maxlength="50" minlength="6" name="password" placeholder="현재 비밀번호를 입력해 주세요." type="password" data-hy-object="field" data-hy-component="label.field">
+                        <input autocomplete="off" class="-flex-stretch" maxlength="50" minlength="6" name="currentPassword" placeholder="현재 비밀번호를 입력해 주세요." type="password" data-hy-object="field" data-hy-component="label.field">
                         <span data-hy-component="label.message">현재 비밀번호를 입력해 주세요.</span>
                     </label>
                     <label class="toggler password-check" data-hy-object="checkLabel" data-hy-name="passwordChangeCheck">
@@ -183,7 +183,7 @@ class AsideHandler {
             formData.append('addressPostal', $form['addressPostal'].value);
             formData.append('addressPrimary', $form['addressPrimary'].value);
             formData.append('addressSecondary', $form['addressSecondary'].value);
-            if ($form['changePasswordCheck'].checked === true) {
+            if ($form['passwordChangeCheck'].checked === true) {
                 formData.append('password', $form['password'].value);
             }
             xhr.onreadystatechange = () => {
