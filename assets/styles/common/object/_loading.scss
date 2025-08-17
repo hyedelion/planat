@@ -1,0 +1,74 @@
+@charset "UTF-8";
+
+@use "sass:color";
+@import "./../../_def";
+@import "./_def";
+
+[data-hy-object="loading"] {
+    @include fixedSize(100%);
+    @include flex(column, center, center, 1rem);
+    top: 0;
+    left: 0;
+    background-color: #424242a0;
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
+    transition-duration: 175ms;
+    transition-property: opacity;
+    transition-timing-function: ease;
+    z-index: 9;
+
+    &.-visible {
+        opacity: 1;
+        pointer-events: auto;
+
+        > [data-hy-component~="loading.icon"],
+        > [data-hy-component~="loading.caption"] {
+            top: 0;
+            opacity: 1;
+        }
+    }
+
+    > [data-hy-component~="loading.icon"] {
+        @keyframes animation {
+            from {
+                transform: rotateZ(0deg);
+            }
+
+            to {
+                transform: rotateZ(360deg);
+            }
+        }
+        @include fixedSize(4.25rem);
+        animation-duration: 1000ms;
+        animation-iteration-count: infinite;
+        animation-name: animation;
+        animation-timing-function: linear;
+        object-fit: contain;
+        object-position: center;
+    }
+
+    > [data-hy-component~="loading.caption"] {
+        color: $global-text-color-dark;
+        font-size: 1.375rem;
+        transition-delay: 100ms;
+    }
+
+    > [data-hy-component~="loading.icon"],
+    > [data-hy-component~="loading.caption"] {
+        top: 0.25rem;
+        opacity: 0;
+        position: relative;
+        transition-duration: 175ms;
+        transition-property: top, opacity;
+        transition-timing-function: ease;
+    }
+}
+
+body.-theme-dark [data-hy-object="loading"] {
+    background-color: #212121a0;
+}
+
+body:has([data-hy-object="loading"].-visible) {
+    overflow: hidden;
+}

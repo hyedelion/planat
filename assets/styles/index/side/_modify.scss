@@ -1,0 +1,89 @@
+@charset "UTF-8";
+
+@import "./../../_def";
+
+#side > .body.modify {
+    @include flex(column, stretch, flex-start, 1rem);
+    display: none;
+    flex-grow: 1;
+    flex-shrink: 1;
+
+    &.-visible {
+        display: flex;
+    }
+
+    > .check.all-day {
+        margin-top: -0.5rem;
+    }
+
+    > .location-list {
+        @include flex(column, stretch, flex-start);
+        max-height: 12.5rem;
+        background-color: $global-background-color-light-lighten-5;
+        border: 0.0625rem solid $global-border-color-light;
+        border-radius: 0.5rem;
+        display: none;
+        margin-top: -0.5rem;
+        overflow: hidden auto;
+
+        &.-visible {
+            display: flex;
+        }
+
+        > .message {
+            color: $global-text-color-light-lighten-40;
+            display: none;
+            font-style: italic;
+            line-height: 1.375;
+            padding: 2rem 1rem;
+            text-align: center;
+
+            &.-visible {
+                display: block;
+            }
+        }
+
+        > .item {
+            @include flex(column, stretch, flex-start, 0.25rem);
+            border-bottom: 0.0625rem solid $global-border-color-light;
+            cursor: pointer;
+            padding: 0.5rem 0.75rem;
+
+            &.-selected > .display-name {
+                color: #3498db;
+            }
+
+            > .address {
+                color: $global-text-color-light-lighten-40;
+            }
+        }
+    }
+
+    > .map {
+        height: 12.5rem;
+        border: 0.0625rem solid $global-border-color-light;
+        border-radius: 0.5rem;
+        display: none;
+        overflow: hidden;
+
+        &.-visible {
+            display: block;
+        }
+    }
+
+    > .address-label {
+        display: none;
+
+        &.-visible {
+            display: flex;
+        }
+    }
+
+    > .button-container {
+        @include flex(row, stretch, flex-end, 0.5rem);
+        display: grid;
+        gap: 0.5rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        margin-top: -1rem;
+    }
+}
