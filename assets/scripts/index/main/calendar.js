@@ -11,9 +11,11 @@ const $cachedSchedules = [];
 let lastYear;
 let lastMonth;
 /**
- * @param {number} targetYear
- * @param {number} targetMonth */
+ * @param {number|undefined} targetYear
+ * @param {number|undefined} targetMonth */
 const draw = (targetYear, targetMonth) => {
+    targetYear ??= lastYear;
+    targetMonth ??= lastMonth;
     const loadGroups = () => new Promise((resolve, reject) => fetch(`${origin}/group/active`, {
         method: 'GET'
     }).then((response) => {
@@ -119,7 +121,7 @@ const draw = (targetYear, targetMonth) => {
                 const $children = Array.from($scheduleContainer.children);
                 return $children.map(($child, index) => $child.classList.contains('gap') ? index : null);
             });
-            const index = availableIndexes[0].filter(value => availableIndexes.every(arr => arr.includes(value))).sort((a, b) => a - b).filter((x) => x != null)[0] ?? null;
+            const index = availableIndexes[0]?.filter(value => availableIndexes.every(arr => arr.includes(value))).sort((a, b) => a - b).filter((x) => x != null)[0] ?? 0;
             for (let i = 0; i < schedule['periodInDays']; i++) {
                 const $day = $days[dayIndex + i];
                 const $scheduleContainer = $day.querySelector('[data-hy-reference="scheduleContainer"]');
@@ -168,6 +170,8 @@ const draw = (targetYear, targetMonth) => {
     }).finally(() => loading.hide());
 };
 
+window.drawCalendar = draw;
+
 $navForm.querySelector('[data-hy-reference="prevButton"]').addEventListener('click', () => {
     const date = new Date(lastYear, lastMonth - 2);
     draw(date.getFullYear(), date.getMonth() + 1);
@@ -179,290 +183,3 @@ $navForm.querySelector('[data-hy-reference="nextButton"]').addEventListener('cli
 
 const currentDate = new Date();
 draw(currentDate.getFullYear(), currentDate.getMonth() + 1);
-
-// const $navForm = $main.querySelector('[data-hy-reference="navForm"]');
-// const $dateContainer = $calendar.querySelector('[data-hy-reference="cellContainer"]');
-// const $weeks = [];
-// const $days = [];
-// const $dates = [];
-// const $counts = [];
-// const $scheduleContainers = [];
-// let lastYear;
-// let lastMonth;
-//
-// /** @param {{targetYear?: number, targetMonth?: number}} args */
-// const draw = (args = {}) => {
-//     /** @param {{targetYear?: number, targetMonth?: number}} args */
-//     const drawCalendar = (args = {}) => {
-//         args ??= {};
-//         if (args.targetYear == null) {
-//             args.targetYear = new Date().getFullYear();
-//         }
-//         if (args.targetMonth == null) {
-//             args.targetMonth = new Date().getMonth() + 1;
-//         }
-//         lastYear = args.targetYear;
-//         lastMonth = args.targetMonth;
-//         $navForm.querySelector('[data-hy-reference="year"]').innerText = args.targetYear;
-//         $navForm.querySelector('[data-hy-reference="month"]').innerText = args.targetMonth.toString().padStart(2, '0');
-//
-//         $dateContainer.innerHTML = '';
-//         $weeks.splice(0, $weeks.length);
-//         $days.splice(0, $days.length);
-//         $dates.splice(0, $dates.length);
-//         $counts.splice(0, $counts.length);
-//         $scheduleContainers.splice(0, $scheduleContainers.length);
-//         for (let w = 0; w < 6; w++) {
-//             const $week = document.createElement('div');
-//             $week.classList.add('week', '-visible');
-//             $week.setAttribute('data-hy-reference', 'week');
-//             for (let d = 0; d < 7; d++) {
-//                 const $day = document.createElement('div');
-//                 $day.classList.add('day');
-//                 $day.setAttribute('data-hy-reference', 'day');
-//                 {
-//                     const $moreButton = document.createElement('button');
-//                     $moreButton.classList.add('more-button');
-//                     $moreButton.setAttribute('type', 'button');
-//                     $moreButton.setAttribute('data-hy-reference', 'moreButton');
-//                     {
-//                         const $icon = document.createElement('img');
-//                         $icon.classList.add('icon');
-//                         $icon.setAttribute('alt', '...');
-//                         $icon.setAttribute('draggable', 'false');
-//                         $icon.setAttribute('src', './assets/images/index/main/schedule/more.png');
-//                         $moreButton.append($icon);
-//                     }
-//                     $day.append($moreButton);
-//                 }
-//                 {
-//                     const $head = document.createElement('span');
-//                     $head.classList.add('head');
-//                     {
-//                         const $date = document.createElement('span');
-//                         $date.classList.add('date');
-//                         $date.setAttribute('data-hy-reference', 'date');
-//                         const $count = document.createElement('span');
-//                         $count.classList.add('count');
-//                         $count.setAttribute('data-hy-reference', 'count');
-//                         $head.append($date, $count);
-//                         $dates.push($date);
-//                         $counts.push($count);
-//                     }
-//                     const $scheduleContainer = document.createElement('div');
-//                     $scheduleContainer.classList.add('schedule-container');
-//                     $scheduleContainer.setAttribute('data-hy-reference', 'scheduleContainer');
-//                     $day.append($head, $scheduleContainer);
-//                     $scheduleContainers.push($scheduleContainer);
-//                 }
-//                 $week.append($day);
-//                 $days.push($day);
-//                 $weeks.push($week);
-//             }
-//             $dateContainer.append($week);
-//         }
-//         const firstDate = new Date(args.targetYear, args.targetMonth - 1);
-//         const lastDate = new Date(args.targetYear, args.targetMonth, 0);
-//         const previousMonthLastDate = new Date(args.targetYear, args.targetMonth - 1, 0);
-//         let index = 0;
-//         for (let i = 0; i < firstDate.getDay(); i++) {
-//             $dates[index].classList.add('previous-month');
-//             $dates[index++].innerText = previousMonthLastDate.getDate() - (firstDate.getDay() - i - 1);
-//         }
-//         for (let i = 1; i <= lastDate.getDate(); i++) {
-//             $days[index].setAttribute('data-hy-value-year', args.targetYear);
-//             $days[index].setAttribute('data-hy-value-month', args.targetMonth);
-//             $days[index].setAttribute('data-hy-value-day', i);
-//             $dates[index++].innerText = i;
-//         }
-//         if ($dates.length - index >= 7) {
-//             $weeks[$weeks.length - 1].classList.remove('-visible');
-//         } else {
-//             $weeks[$weeks.length - 1].classList.add('-visible');
-//         }
-//         for (let i = 0, cellFilled = index; i < $dates.length - cellFilled; i++) {
-//             $dates[index].classList.add('next-month');
-//             $dates[index++].innerText = i + 1;
-//         }
-//     }
-//     /** @param {{targetYear?: number, targetMonth?: number}} args */
-//     const drawSchedules = (args) => {
-//         args ??= {};
-//         if (args.targetYear == null) {
-//             args.targetYear = new Date().getFullYear();
-//         }
-//         if (args.targetMonth == null) {
-//             args.targetMonth = new Date().getMonth() + 1;
-//         }
-//         lastYear = args.targetYear;
-//         lastMonth = args.targetMonth;
-//
-//         const loadGroups = () => new Promise((resolve, reject) => {
-//             const xhr = new XMLHttpRequest();
-//             xhr.onreadystatechange = () => {
-//                 if (xhr.readyState !== XMLHttpRequest.DONE) {
-//                     return;
-//                 }
-//                 loading.hide();
-//                 if (xhr.status < 200 || xhr.status >= 300) {
-//                     reject?.();
-//                     return;
-//                 }
-//                 const groups = JSON.parse(xhr.responseText);
-//                 resolve?.(groups);
-//             }
-//             xhr.open('GET', `${origin}/group/active`);
-//             xhr.send();
-//         });
-//         const loadSchedules = () => new Promise((resolve, reject) => {
-//             const xhr = new XMLHttpRequest();
-//             const url = new URL(`${origin}/schedule/query`);
-//             const targetDateFrom = new Date(args.targetYear, args.targetMonth - 1);
-//             const targetDateTo = new Date(args.targetYear, args.targetMonth, 0);
-//             url.searchParams.set('from', targetDateFrom.formatToDate() + 'T00:00:00');
-//             url.searchParams.set('to', targetDateTo.formatToDate() + 'T23:59:59');
-//             xhr.onreadystatechange = () => {
-//                 if (xhr.readyState !== XMLHttpRequest.DONE) {
-//                     return;
-//                 }
-//                 loading.hide();
-//                 if (xhr.status < 200 || xhr.status >= 300) {
-//                     reject?.();
-//                     return;
-//                 }
-//                 let schedules = JSON.parse(xhr.responseText);
-//                 schedules.forEach((schedule) => {
-//                     schedule['groupId'] ??= 0;
-//                     schedule['startAtInstance'] = new Date(schedule['startAt']);
-//                     schedule['endAtInstance'] = new Date(schedule['endAt']);
-//                 });
-//                 schedules = schedules.sort((a, b) => a['startAtInstance'].getTime() - b['startAtInstance'].getTime());
-//                 resolve?.(schedules);
-//             };
-//             xhr.open('GET', url);
-//             xhr.send();
-//         });
-//         $scheduleContainers.forEach(($scheduleContainer) => $scheduleContainer.innerHTML = '');
-//         loading.show();
-//         Promise.all([loadGroups(), loadSchedules()]).then(([groups, schedules]) => {
-//             loading.hide();
-//             const groupMap = groups.reduce((map, group) => (map[group.groupId] = group, map), {});
-//             const $schedules = [];
-//             schedules.forEach((schedule) => {
-//                 let targetIndex = $days.findIndex(($day) => {
-//                     return parseInt($day.dataset['hyValueYear']) === schedule['startAtInstance'].getFullYear() &&
-//                             parseInt($day.dataset['hyValueMonth']) === schedule['startAtInstance'].getMonth() + 1 &&
-//                             parseInt($day.dataset['hyValueDay']) === schedule['startAtInstance'].getDate();
-//                 });
-//                 const startDate = schedule['startAtInstance'].getDate();
-//                 const endDate = schedule['endAtInstance'].getDate();
-//                 const $linkedSchedules = [];
-//                 for (let date = startDate; date <= endDate; date++) {
-//                     const $scheduleContainer = $scheduleContainers[targetIndex++];
-//                     if (typeof schedule['precedingCount'] === 'number') {
-//                         const gapCount = schedule['precedingCount'] - $scheduleContainer.children.length;
-//                         for (let i = 0; i < gapCount; i++) {
-//                             const $gap = document.createElement('div');
-//                             $gap.classList.add('gap');
-//                             $scheduleContainer.append($gap);
-//                         }
-//                     }
-//                     const $schedule = document.createElement('div');
-//                     const group = groupMap[schedule.groupId];
-//                     $schedule.dataset['hyGroupId'] = schedule.groupId;
-//                     $schedule.classList.add('schedule');
-//                     $schedule.setAttribute('data-hy-raw', JSON.stringify(schedule));
-//                     $schedule.setAttribute('data-hy-id', schedule['id']);
-//                     if (date === startDate) {
-//                         $schedule.innerText = schedule.title;
-//                         $schedule.classList.add('starter');
-//                     }
-//                     if (date === endDate) {
-//                         $schedule.classList.add('ender');
-//                     }
-//                     $schedule.style.backgroundColor = '#' + group.backgroundColor;
-//                     $schedule.style.color = '#' + group.color;
-//                     if (asideHandler.groupCheckMap[schedule.groupId] === true) {
-//                         $schedule.show();
-//                     }
-//                     $scheduleContainer.append($schedule);
-//                     $linkedSchedules.push($schedule);
-//                     $schedules.push($schedule);
-//                     if (schedule['precedingCount'] == null) {
-//                         schedule['precedingCount'] = Array.from($scheduleContainer.children).indexOf($schedule);
-//                     }
-//                 }
-//                 if (schedule['startAtInstance'].formatToDate() === schedule['endAtInstance'].formatToDate()) {
-//                     const $schedule = $schedules.at(-1);
-//                     const $scheduleContainer = $schedule.parentElement;
-//                     const $firstGap = $scheduleContainer.querySelector('.gap');
-//                     if ($firstGap != null) {
-//                         $scheduleContainer.insertBefore($schedule, $firstGap.nextSibling);
-//                         $firstGap.remove();
-//                     }
-//                 }
-//                 $linkedSchedules.forEach(($schedule) => {
-//                     $schedule.addEventListener('mouseover', () => {
-//                         $linkedSchedules.forEach(($schedule) => $schedule.style.filter = 'brightness(80%)');
-//                     });
-//                     $schedule.addEventListener('mouseleave', () => {
-//                         $linkedSchedules.forEach(($schedule) => $schedule.style.filter = '');
-//                     });
-//                 });
-//             });
-//             return $schedules;
-//         }).then(($schedules) => {
-//
-//             return $schedules;
-//         }).then(($schedules) => {
-//             asideHandler.$groupList.querySelectorAll('[data-hy-reference="item"]').forEach(($item) => {
-//                 const $checkInput = $item.querySelector('[data-hy-component="checkLabel.input"]');
-//                 $checkInput.addEventListener('input', () => {
-//                     $schedules.filter(($schedule) => $schedule.dataset['hyGroupId'] === $item.dataset['hyId']).forEach(($schedule) => {
-//                         if ($checkInput.checked === true) {
-//                             $schedule.show();
-//                         } else {
-//                             $schedule.hide();
-//                         }
-//                     });
-//                 })
-//             });
-//         }).then(() => {
-//             $days.forEach(($day, index) => {
-//                 if ($day.scrollHeight > $day.clientHeight) {
-//                     const $schedules = Array.from($day.querySelectorAll('.schedule'));
-//                     const $overflownSchedules = $schedules.filter(($schedule) => $schedule.offsetTop + $schedule.clientHeight > $day.clientHeight);
-//                     if ($overflownSchedules.length > 0) {
-//                         $overflownSchedules.forEach(($schedule) => $schedule.hide());
-//                         $day.classList.add('-overflown');
-//                     }
-//                 }
-//                 const count = $day.querySelectorAll('.schedule').length;
-//                 const $count = $counts[index];
-//                 $count.innerText = count;
-//                 if (count === 0) {
-//                     $count.hide();
-//                 } else {
-//                     $count.show();
-//                 }
-//             });
-//         });
-//     }
-//     drawCalendar(args);
-//     drawSchedules(args);
-// }
-// $navForm.querySelector('[data-hy-reference="prevButton"]').addEventListener('click', () => {
-//     const date = new Date(lastYear, lastMonth - 2);
-//     draw({
-//         targetYear: date.getFullYear(),
-//         targetMonth: date.getMonth() + 1
-//     });
-// });
-// $navForm.querySelector('[data-hy-reference="nextButton"]').addEventListener('click', () => {
-//     const date = new Date(lastYear, lastMonth);
-//     draw({
-//         targetYear: date.getFullYear(),
-//         targetMonth: date.getMonth() + 1
-//     });
-// });
-// draw();

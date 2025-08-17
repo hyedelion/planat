@@ -3145,6 +3145,86 @@ body > .dialog > .my-page > [data-hy-component="dialog.modal.content"] > .form >
   flex-grow: 1;
   flex-shrink: 1;
 }
+body > .dialog > .my-page > [data-hy-component="dialog.modal.content"] > .form .gender-wrapper {
+  border: 0.0625rem solid #ededed;
+  border-radius: 0.25rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: 1fr;
+  overflow: hidden;
+}
+body > .dialog > .my-page > [data-hy-component="dialog.modal.content"] > .form .gender-wrapper > .gender {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0 0.625rem;
+}
+body > .dialog > .my-page > [data-hy-component="dialog.modal.content"] > .form .gender-wrapper > .gender > * {
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+body > .dialog > .my-page > [data-hy-component="dialog.modal.content"] > .form .gender-wrapper > .gender > .-flex-stretch {
+  flex-grow: 1;
+  flex-shrink: 1;
+}
+body > .dialog > .my-page > [data-hy-component="dialog.modal.content"] > .form .gender-wrapper > .gender + .gender {
+  border-left: 0.0625rem solid #ededed;
+}
+body > .dialog > .my-page > [data-hy-component="dialog.modal.content"] > .form .gender-wrapper > .gender:has(> input:checked) {
+  background-color: #a47764;
+  color: #f6f6f6;
+}
+body > .dialog > .my-page > [data-hy-component="dialog.modal.content"] > .form > .address-find-dialog {
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+  height: 100%;
+  max-height: 100%;
+  min-height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(66, 66, 66, 0.6274509804);
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transition-duration: 175ms;
+  transition-property: opacity;
+  transition-timing-function: ease;
+  z-index: 1;
+}
+body > .dialog > .my-page > [data-hy-component="dialog.modal.content"] > .form > .address-find-dialog.-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+body > .dialog > .my-page > [data-hy-component="dialog.modal.content"] > .form > .address-find-dialog.-visible > .modal {
+  top: 50%;
+  opacity: 1;
+  pointer-events: auto;
+}
+body > .dialog > .my-page > [data-hy-component="dialog.modal.content"] > .form > .address-find-dialog > .modal {
+  width: 22.5rem;
+  max-width: 22.5rem;
+  min-width: 22.5rem;
+  height: 28.75rem;
+  max-height: 28.75rem;
+  min-height: 28.75rem;
+  top: calc(50% + 0.25rem);
+  left: 50%;
+  background-color: #fafafa;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 1rem rgba(33, 33, 33, 0.062745098);
+  opacity: 0;
+  overflow: hidden auto;
+  pointer-events: none;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  transition-duration: 175ms;
+  transition-property: top, opacity;
+  transition-timing-function: ease;
+}
 body > .dialog > .my-page > [data-hy-component="dialog.modal.content"] > .form > .toggler:has(:checked) + .toggleable {
   display: flex;
 }

@@ -208,6 +208,7 @@ class ScheduleAddHandler {
                     break;
                 case 'success':
                     this.$element.hide();
+                    drawCalendar();
                     break;
                 default:
                     dialog.showSimpleOk('경고', '서버가 알 수 없는 응답을 반환하였습니다. 잠시 후 다시 시도해 주세요.');
@@ -253,7 +254,7 @@ class ScheduleAddHandler {
             this.$element['allDay'].checked = false;
             if (args?.initDate != null) {
                 this.$element['startAt'].value = args.initDate + 'T00:00:00';
-                this.$element['endAt'].value = args.initDate + 'T00:00:00';
+                this.$element['endAt'].value = args.initDate + 'T23:59:59';
             }
             sideHandler.hideAllBodies();
             this.$element.show();

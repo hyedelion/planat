@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="_user.nickname" th:content="${session.signedUser.nickname}">
+    <meta name="_user.addressPostal" th:content="${session.signedUser.addressPostal}">
+    <meta name="_user.addressPrimary" th:content="${session.signedUser.addressPrimary}">
+    <meta name="_user.addressSecondary" th:content="${session.signedUser.addressSecondary == null ? '' : session.signedUser.addressSecondary}">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>PLAN:AT</title>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js" type="text/javascript"></script>
@@ -199,8 +203,8 @@
 <aside id="aside">
     <span class="logo">PLAN:AT</span>
     <div class="user">
-        <a class="image-wrapper" target="_blank" th:href="@{/user/email (email = ${session.signedUser.getEmail()})}">
-            <img alt="" class="image" draggable="false" th:src="@{/user/email (email = ${session.signedUser.getEmail()})}">
+        <a class="image-wrapper" target="_blank" th:href="@{/user/image (email = ${session.signedUser.getEmail()})}">
+            <img alt="" class="image" draggable="false" th:src="@{/user/image (email = ${session.signedUser.getEmail()})}">
         </a>
         <div class="text-container">
             <span class="name" th:text="${session.signedUser.getNickname()}"></span>
